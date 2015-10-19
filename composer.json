@@ -1,0 +1,24 @@
+{
+	"name": "avid/hesper",
+	"type": "library",
+	"description": "Hesper is the mature multi-purpose object-oriented PHP framework. It is a logical continuation of onPHP framework.",
+	"authors": [
+		{
+			"name": "Alex Gorbylev",
+			"email": "alex@gorbylev.ru",
+			"homepage": "http://gorbylev.ru",
+			"role": "Creator/Developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Hesper\\": "src/"
+		},
+		"files": [
+			"init.php"
+		]
+	},
+	"require": {
+		"php": ">=5.5.0"
+	}
+}
