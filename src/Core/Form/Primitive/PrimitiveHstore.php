@@ -7,7 +7,10 @@
  */
 namespace Hesper\Core\Form\Primitive;
 
+use Hesper\Core\Base\Assert;
 use Hesper\Core\Exception\WrongArgumentException;
+use Hesper\Core\Form\Form;
+use Hesper\Main\Base\Hstore;
 
 /**
  * Class PrimitiveHstore
