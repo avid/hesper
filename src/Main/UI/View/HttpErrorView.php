@@ -21,6 +21,10 @@ class HttpErrorView implements View {
 	protected $prefix  = null;
 	protected $postfix = null;
 
+	public static function create(HttpStatus $status, $prefix=null, $postfix=null) {
+		return new static($status, $prefix, $postfix);
+	}
+
 	public function __construct(HttpStatus $status, $prefix, $postfix) {
 		$this->status = $status;
 
