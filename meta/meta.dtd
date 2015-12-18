@@ -51,6 +51,7 @@
 			|StraightMapping
 			|EnumerationClass
 			|EnumClass
+            |RegistryClass
 			|SpookedClass
 			|SpookedEnumeration
 			|SpookedEnum

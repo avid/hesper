@@ -851,7 +851,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 					throw new WrongArgumentException('obsoleted identifier description found in ' . "{$class->getName()} class;\n" . 'you must use <identifier /> instead.');
 				}
 
-				if (!$property->getType()->isGeneric()) {
+				if (!$property->getType()->isGeneric() && !($class->getPattern() instanceof ValueObjectPattern)) {
 
 					if (!isset($xmlProperty['relation'])) {
 						throw new MissingElementException('relation should be set for non-generic ' . "property '{$property->getName()}' type '" . get_class($property->getType()) . "'" . " of '{$class->getName()}' class");
