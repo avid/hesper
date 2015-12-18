@@ -69,7 +69,7 @@ EOT;
 		$isNamed = false;
 
 		if ($parent = $class->getParent()) {
-			$out .= " extends {$parent->getName()}";
+            $out .= " extends \\{$parent->getNamespace()}\\Business\\{$parent->getName()}";
 		} elseif ($class->getPattern() instanceof DictionaryClassPattern && $class->hasProperty('name')) {
 			$out .= " extends NamedObject";
 			$isNamed = true;

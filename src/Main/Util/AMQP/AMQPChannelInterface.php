@@ -100,6 +100,11 @@ interface AMQPChannelInterface
 	**/
 	public function basicAck($deliveryTag, $multiple = false);
 
+    /**
+     * @return AMQPChannelInterface
+     **/
+    public function basicNack($deliveryTag, $flag);
+
 	/**
 	 * @return AMQPChannelInterface
 	**/
