@@ -151,6 +151,23 @@ class JsonView implements View, Stringable {
 	}
 
 	/**
+	 * @param bool $flag
+	 *
+	 * @return JsonView
+	 **/
+	public function setUnescapedUnicode($flag = false) {
+		if (defined("JSON_UNESCAPED_UNICODE")) {
+			if ($flag) {
+				$this->options = $this->options | JSON_UNESCAPED_UNICODE;
+			} else {
+				$this->options = $this->options & ~JSON_UNESCAPED_UNICODE;
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * @return JsonView
 	 **/
 	public function render(Model $model = null) {
