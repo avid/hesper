@@ -7,6 +7,10 @@
  */
 namespace Hesper\Main\Util\AMQP\Pecl;
 
+use AMQPChannel;
+use AMQPExchange;
+use AMQPQueue;
+use Exception;
 use Hesper\Core\Base\Assert;
 use Hesper\Core\Exception\ObjectNotFoundException;
 use Hesper\Core\Exception\UnimplementedFeatureException;
@@ -94,7 +98,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 					? AMQP_MULTIPLE
 					: self::AMQP_NONE
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -128,7 +132,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 
 			$result = $obj->cancel($consumerTag);
 
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -173,7 +177,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 					? AMQP_AUTOACK
 					: self::AMQP_NONE
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -199,7 +203,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 					? AMQP_AUTOACK
 					: self::AMQP_NONE
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -236,7 +240,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				$msg->getBitmask(new AMQPPeclOutgoingMessageBitmask()),
 				$msg->getProperties()
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -266,7 +270,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				$prefetchSize,
 				$prefetchCount
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -300,7 +304,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				$sourceName,
 				$routingKey
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -352,7 +356,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 			$obj->setArguments($conf->getArguments());
 
 			$result = $obj->declareExchange();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -385,7 +389,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		try {
 			$obj = $this->lookupExchange($name);
 			$result = $obj->delete($name, $bitmask);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -414,7 +418,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		try {
 			$obj = $this->lookupQueue($name);
 			$result = $obj->bind($exchange, $routingKey);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -445,7 +449,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				unset($this->queueList[$name]);
 
 			$this->queueList[$name] =
-				new \AMQPQueue($this->getChannelLink());
+				new AMQPQueue($this->getChannelLink());
 
 			$obj = $this->queueList[$name];
 			$obj->setName($name);
@@ -482,7 +486,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		try {
 			$obj = $this->lookupQueue($name);
 			$result = $obj->delete();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -511,7 +515,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		try {
 			$obj = $this->lookupQueue($name);
 			$result = $obj->purge();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -538,7 +542,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		try {
 			$obj = $this->lookupQueue($name);
 			$result = $obj->unbind($exchange, $routingKey);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
@@ -566,7 +570,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 
 		if (!isset($this->exchangeList[$name])) {
 			$this->exchangeList[$name] =
-				new \AMQPExchange($this->getChannelLink());
+				new AMQPExchange($this->getChannelLink());
 			$this->exchangeList[$name]->setName($name);
 		}
 
@@ -593,7 +597,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		$this->checkConnection();
 
 		if (!isset($this->queueList[$name])) {
-			$this->queueList[$name] = new \AMQPQueue($this->getChannelLink());
+			$this->queueList[$name] = new AMQPQueue($this->getChannelLink());
 			if ($name != self::NIL)
 					$this->queueList[$name]->setName($name);
 		}
@@ -641,7 +645,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 	protected function getChannelLink()
 	{
 		if (!$this->link) {
-			$this->link = new \AMQPChannel(
+			$this->link = new AMQPChannel(
 				$this->getTransport()->getLink()
 			);
 		}
@@ -673,7 +677,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				$deliveryTag,
 				$flag
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->clearConnection();
 
 			throw new AMQPServerException(
