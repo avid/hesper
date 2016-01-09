@@ -42,6 +42,7 @@ use Hesper\Meta\Pattern\EnumClassPattern;
 use Hesper\Meta\Pattern\EnumerationClassPattern;
 use Hesper\Meta\Pattern\GenerationPattern;
 use Hesper\Meta\Pattern\InternalClassPattern;
+use Hesper\Meta\Pattern\RegistryClassPattern;
 use Hesper\Meta\Pattern\SpookedClassPattern;
 use Hesper\Meta\Pattern\SpookedEnumerationPattern;
 use Hesper\Meta\Pattern\SpookedEnumPattern;
@@ -391,7 +392,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 				}
 
 				// special handling for Enumeration instances
-				if ($class->getPattern() instanceof EnumerationClassPattern || $class->getPattern() instanceof EnumClassPattern) {
+				if ($class->getPattern() instanceof EnumerationClassPattern || $class->getPattern() instanceof EnumClassPattern || $class->getPattern() instanceof RegistryClassPattern) {
 					$object = new $className(call_user_func([$className, 'getAnyId']));
 
 					Assert::isTrue(unserialize(serialize($object)) == $object);
