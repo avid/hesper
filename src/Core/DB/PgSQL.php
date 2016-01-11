@@ -198,6 +198,8 @@ class PgSQL extends DB {
 
 			'hstore' => DataType::HSTORE, 'uuid' => DataType::UUID,
 
+			'json' => DataType::JSON, 'jsonb' => DataType::JSONB,
+
 			// unhandled types, not ours anyway
 			'tsvector' => null,
 

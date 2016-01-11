@@ -36,6 +36,9 @@ final class DataType extends Enum implements DialectString {
 	const HSTORE    = 0x00000B;
 	const UUID      = 0x00000C;
 
+	const JSON      		= 0x000033;
+	const JSONB      		= 0x000034;
+
 	const DATE        = 0x000A0B;
 	const TIME        = 0x000A0C;
 	const TIMESTAMP   = 0x000A0D;
@@ -78,6 +81,9 @@ final class DataType extends Enum implements DialectString {
 		self::IP => 'IP', self::IP_RANGE => 'IP_RANGE',
 
 		self::HSTORE => 'HSTORE', self::UUID => 'UUID',
+
+		self::JSON => 'JSON',
+		self::JSONB	=> 'JSONB',
 	];
 
 	/**
