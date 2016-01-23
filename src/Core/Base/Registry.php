@@ -1,13 +1,9 @@
 <?php
-/***************************************************************************
- *   Copyright (C) 2012 by Alexey V. Gorbylev                             *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU Lesser General Public License as        *
- *   published by the Free Software Foundation; either version 3 of the    *
- *   License, or (at your option) any later version.                       *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @project    Hesper Framework
+ * @author     Alex Gorbylev
+ * @originally onPHP Framework
+ */
 namespace Hesper\Core\Base;
 
 use Hesper\Core\Exception\MissingElementException;
@@ -30,7 +26,7 @@ abstract class Registry extends NamedObject implements \Serializable {
 
     /**
      * @param integer $id
-     * @return Registry
+     * @return static
      */
     public static function create($id) {
         return new static($id);
@@ -42,7 +38,7 @@ abstract class Registry extends NamedObject implements \Serializable {
 
     /**
      * @param $id
-     * @return Registry
+     * @return static
      * @throws MissingElementException
      */
     protected function setInternalId($id) {
@@ -128,11 +124,11 @@ abstract class Registry extends NamedObject implements \Serializable {
     }
 
     /**
-     * @return Enum
-     **/
+     * @param $id
+     * @return IdentifiableObject|void
+     * @throws UnsupportedMethodException
+     */
     public function setId($id) {
         throw new UnsupportedMethodException('You can not change id here, because it is politics for Registry!');
     }
 }
-
-?>
