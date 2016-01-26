@@ -27,7 +27,7 @@ final class DictionaryDaoBuilder extends BaseBuilder {
 		}
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Auto\DAO;
+namespace {$class->getAutoDaoNamespace()};
 
 
 EOT;

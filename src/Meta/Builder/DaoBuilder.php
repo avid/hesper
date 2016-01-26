@@ -21,7 +21,7 @@ final class DaoBuilder extends OnceBuilder {
 		$out = self::getHead();
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\DAO;
+namespace {$class->getDaoNamespace()};
 
 use {$class->getAutoDaoClass()};
 

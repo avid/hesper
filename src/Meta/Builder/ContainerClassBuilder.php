@@ -27,7 +27,7 @@ final class ContainerClassBuilder extends OnceBuilder {
 		$out = self::getHead();
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\DAO;
+namespace {$class->getDaoNamespace()}\DAO;
 
 
 EOT;

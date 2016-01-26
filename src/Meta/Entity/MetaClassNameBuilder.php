@@ -18,7 +18,7 @@ class MetaClassNameBuilder extends StaticFactory {
 		if( $class->getPattern() instanceof InternalClassPattern ) {
 			throw new WrongArgumentException();
 		} else {
-			return ($addBackslash ? '\\' : '') . $class->getNamespace() . '\Business\\' . $class->getName();
+			return ($addBackslash ? '\\' : '') . $class->getNamespace() . '\\' . $class->getName();
 		}
 	}
 
@@ -31,7 +31,7 @@ class MetaClassNameBuilder extends StaticFactory {
 		if( $type->isGeneric() ) {
 			$className .= $property->getType()->getFullClass();
 		} else {
-			$className .= $property->getClass()->getNamespace().'\Business\\'.$type->getClassName();
+			$className .= $property->getClass()->getNamespace() . '\\' . $type->getClassName();
 		}
 		return $className;
 	}
@@ -45,8 +45,8 @@ class MetaClassNameBuilder extends StaticFactory {
 		}
 		$className =
 			($addBackslash ? '\\' : '')
-			.$property->getClass()->getNamespace()
-			.'\DAO\\'
+			.$property->getClass()->getDaoNamespace()
+			.'\\'
 			.$property->getClass()->getName() . ucfirst($property->getName()) . 'DAO'
 		;
 		return $className;

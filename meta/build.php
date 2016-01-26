@@ -44,7 +44,10 @@ HELP;
 	function init()
 	{
 		Hesper\Core\Base\Assert::isTrue(defined('PATH_CLASSES'), 'constant PATH_CLASSES must be defined');
-		
+
+		if (!defined('HESPER_META_BUSINESS_DIR_NAME'))
+			define('HESPER_META_BUSINESS_DIR_NAME', 'Business');
+
 		if (!defined('HESPER_META_DAO_DIR'))
 			define(
 				'HESPER_META_DAO_DIR',
@@ -54,7 +57,7 @@ HELP;
 		if (!defined('HESPER_META_BUSINESS_DIR'))
 			define(
 				'HESPER_META_BUSINESS_DIR',
-				PATH_CLASSES.'Business'.DIRECTORY_SEPARATOR
+				PATH_CLASSES.HESPER_META_BUSINESS_DIR_NAME.DIRECTORY_SEPARATOR
 			);
 		
 		if (!defined('HESPER_META_PROTO_DIR'))
@@ -68,8 +71,7 @@ HELP;
 		if (!defined('HESPER_META_AUTO_BUSINESS_DIR'))
 			define(
 				'HESPER_META_AUTO_BUSINESS_DIR',
-				HESPER_META_AUTO_DIR
-				.'Business'.DIRECTORY_SEPARATOR
+				HESPER_META_AUTO_DIR.HESPER_META_BUSINESS_DIR_NAME.DIRECTORY_SEPARATOR
 			);
 		
 		define(

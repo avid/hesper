@@ -21,10 +21,15 @@ use Hesper\Meta\Type\IntegerType;
  */
 class MetaClass {
 
-	private $namespace = null;
-	private $name      = null;
-	private $tableName = null;
-	private $type      = null;
+	private $namespace     = null;
+	private $autoNamespace = null;
+	private $autoDaoNamespace = null;
+	private $daoNamespace = null;
+	private $autoProtoNamespace = null;
+	private $protoNamespace = null;
+	private $name          = null;
+	private $tableName     = null;
+	private $type          = null;
 
 	private $parent = null;
 
@@ -44,6 +49,15 @@ class MetaClass {
 	public function __construct($name, $namespace) {
 		$this->name = $name;
 		$this->namespace = $namespace;
+
+		$rootParts = explode('\\', $namespace);
+		$lastPart = end($rootParts);
+		array_splice($rootParts, 1);
+		$this->autoNamespace = implode('\\', array_merge($rootParts, ['Auto', $lastPart]));
+		$this->autoDaoNamespace = implode('\\', array_merge($rootParts, ['Auto', 'DAO']));
+		$this->autoProtoNamespace = implode('\\', array_merge($rootParts, ['Auto', 'Proto']));
+		$this->daoNamespace = implode('\\', array_merge($rootParts, ['DAO']));
+		$this->protoNamespace = implode('\\', array_merge($rootParts, ['Proto']));
 
 		$dumb = strtolower(preg_replace(':([A-Z]):', '_\1', $name));
 
@@ -66,29 +80,29 @@ class MetaClass {
 		if( !$this->getPattern()->daoExists() ) {
 			throw new WrongStateException($this->getName().' does not support DAO');
 		}
-		return ($addBackslash ? '\\' : '') . $this->namespace . '\DAO\\' . $this->name . 'DAO';
+		return ($addBackslash ? '\\' : '') . $this->daoNamespace . '\\' . $this->name . 'DAO';
 	}
 
 	public function getProtoClass($addBackslash = false) {
-		return ($addBackslash ? '\\' : '') . $this->namespace . '\Proto\Proto' . $this->name;
+		return ($addBackslash ? '\\' : '') . $this->protoNamespace . '\Proto' . $this->name;
 	}
 
 	public function getAutoBusinessClass($addBackslash = false) {
 		if($this->getPattern() instanceof InternalClassPattern) {
 			throw new WrongStateException($this->getName().' does not have Auto class');
 		}
-		return ($addBackslash ? '\\' : '') . $this->namespace . '\Auto\Business\Auto' . $this->name;
+		return ($addBackslash ? '\\' : '') . $this->autoNamespace . '\Auto' . $this->name;
 	}
 
 	public function getAutoDaoClass($addBackslash = false) {
 		if( !$this->getPattern()->daoExists() ) {
 			throw new WrongStateException($this->getName().' does not support DAO');
 		}
-		return ($addBackslash ? '\\' : '') . $this->namespace . '\Auto\DAO\Auto' . $this->name . 'DAO';
+		return ($addBackslash ? '\\' : '') . $this->autoDaoNamespace . '\Auto' . $this->name . 'DAO';
 	}
 
 	public function getAutoProtoClass($addBackslash = false) {
-		return ($addBackslash ? '\\' : '') . $this->namespace . '\Auto\Proto\AutoProto' . $this->name;
+		return ($addBackslash ? '\\' : '') . $this->autoProtoNamespace . '\AutoProto' . $this->name;
 	}
 
 	public function getTableName() {
@@ -403,5 +417,45 @@ class MetaClass {
 	public function isSequenceless() {
 		return !($this->getIdentifier()->getType() instanceof IntegerType);
 	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getAutoNamespace() {
+		return $this->autoNamespace;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getAutoDaoNamespace()
+	{
+		return $this->autoDaoNamespace;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getAutoProtoNamespace()
+	{
+		return $this->autoProtoNamespace;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getDaoNamespace()
+	{
+		return $this->daoNamespace;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getProtoNamespace()
+	{
+		return $this->protoNamespace;
+	}
+
 
 }

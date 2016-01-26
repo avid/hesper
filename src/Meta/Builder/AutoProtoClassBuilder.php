@@ -23,14 +23,14 @@ final class AutoProtoClassBuilder extends BaseBuilder {
 
 		if ($class->hasBuildableParent()) {
 			$parentName = 'Proto' . $parent->getName();
-			$uses = "{$class->getNamespace()}\\Proto\\{$parentName}";
+			$uses = "{$parent->getProtoNamespace()}\\{$parentName}";
 		} else {
 			$parentName = 'AbstractProtoClass';
 			$uses = AbstractProtoClass::class;
 		}
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Auto\Proto;
+namespace {$class->getAutoProtoNamespace()};
 
 use $uses;
 

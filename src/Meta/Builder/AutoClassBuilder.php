@@ -15,6 +15,7 @@ use Hesper\Meta\Entity\MetaClassNameBuilder;
 use Hesper\Meta\Entity\MetaClassProperty;
 use Hesper\Meta\Entity\MetaRelation;
 use Hesper\Meta\Pattern\DictionaryClassPattern;
+use Hesper\Meta\Pattern\InternalClassPattern;
 use Hesper\Meta\Pattern\ValueObjectPattern;
 use Hesper\Meta\Type\BooleanType;
 use Hesper\Meta\Type\ObjectType;
@@ -29,7 +30,7 @@ final class AutoClassBuilder extends BaseBuilder {
 		$out = self::getHead();
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Auto\Business;
+namespace {$class->getAutoNamespace()};
 
 
 EOT;
@@ -69,7 +70,7 @@ EOT;
 		$isNamed = false;
 
 		if ($parent = $class->getParent()) {
-            $out .= " extends \\{$parent->getNamespace()}\\Business\\{$parent->getName()}";
+			$out .= " extends \\{$parent->getNamespace()}\\{$parent->getName()}";
 		} elseif ($class->getPattern() instanceof DictionaryClassPattern && $class->hasProperty('name')) {
 			$out .= " extends NamedObject";
 			$isNamed = true;

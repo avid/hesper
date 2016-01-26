@@ -29,13 +29,13 @@ final class AutoDaoBuilder extends BaseBuilder {
 			$uses = StorableDAO::class;
 		} else {
 			$parentName = $parent->getName() . 'DAO';
-			$uses = "{$class->getNamespace()}\\DAO\\{$parentName}";
+			$uses = "{$class->getDaoNamespace()}\\{$parentName}";
 		}
 
 		$out = self::getHead();
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Auto\DAO;
+namespace {$class->getAutoDaoNamespace()};
 
 use $uses;
 

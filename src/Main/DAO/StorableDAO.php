@@ -14,6 +14,7 @@ use Hesper\Core\DB\DBPool;
 use Hesper\Core\Logic\Expression;
 use Hesper\Core\OSQL\OSQL;
 use Hesper\Core\OSQL\UpdateQuery;
+use Hesper\Main\DAO\Events\OnBeforeSave;
 
 /**
  * Class StorableDAO
@@ -63,6 +64,8 @@ abstract class StorableDAO extends ProtoDAO {
 
 	public function unite(Identifiable $object, Identifiable $old) {
 		$query = $this->getProtoClass()->fillQuery(OSQL::update($this->getTable()), $object, $old);
+
+		$this->runTrigger($object, OnBeforeSave::class);
 
 		if (!$query->getFieldsCount()) {
 			return $object;

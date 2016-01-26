@@ -21,10 +21,15 @@ use Hesper\Core\OSQL\OSQL;
 use Hesper\Core\OSQL\SelectQuery;
 use Hesper\Core\OSQL\SQLFunction;
 use Hesper\Main\Base\AbstractProtoClass;
+use Hesper\Main\DAO\Events\OnAfterDrop;
+use Hesper\Main\DAO\Events\OnAfterSave;
+use Hesper\Main\DAO\Events\OnBeforeDrop;
+use Hesper\Main\DAO\Events\OnBeforeSave;
 use Hesper\Main\DAO\Uncacher\UncacherBase;
 use Hesper\Main\DAO\Uncacher\UncacherGenericDAO;
 use Hesper\Main\DAO\Uncacher\UncachersPool;
 use Hesper\Main\Util\ArrayUtils;
+use Hesper\Main\Util\ClassUtils;
 
 /**
  * Basis of all DAO's.
@@ -35,6 +40,8 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 	private $identityMap = [];
 
 	protected $linkName = null;
+
+	private $triggersAllowed = true;
 
 	abstract public function getTable();
 
@@ -216,9 +223,14 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 	}
 
 	public function dropById($id) {
+		call_user_func($this->prepareTrigger($id, OnBeforeDrop::class));
+		$after = $this->prepareTrigger($id, OnAfterDrop::class);
+
 		unset($this->identityMap[$id]);
 
 		$count = Cache::worker($this)->dropById($id);
+
+		call_user_func($after);
 
 		if (1 != $count) {
 			throw new WrongStateException('no object were dropped');
@@ -228,11 +240,16 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 	}
 
 	public function dropByIds(array $ids) {
+		call_user_func($this->prepareTrigger($ids, OnBeforeDrop::class));
+		$after = $this->prepareTrigger($ids, OnAfterDrop::class);
+
 		foreach ($ids as $id) {
 			unset($this->identityMap[$id]);
 		}
 
 		$count = Cache::worker($this)->dropByIds($ids);
+
+		call_user_func($after);
 
 		if ($count != count($ids)) {
 			throw new WrongStateException('not all objects were dropped');
@@ -295,6 +312,8 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 	protected function inject(InsertOrUpdateQuery $query, Identifiable $object) {
 		$this->checkObjectType($object);
 
+		$this->runTrigger($object, OnBeforeSave::class);
+
 		return $this->doInject($this->setQueryFields($query->setTable($this->getTable()), $object), $object);
 	}
 
@@ -328,7 +347,11 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 		}
 
 		// clean out Identifier, if any
-		return $this->addObjectToMap($object->setId($object->getId()));
+		$result = $this->addObjectToMap($object->setId($object->getId()));
+
+		$this->runTrigger($object, OnAfterSave::class);
+
+		return $result;
 	}
 
 	/* void */
@@ -347,5 +370,53 @@ abstract class GenericDAO extends Singleton implements BaseDAO {
 		}
 
 		return $list;
+	}
+
+	public function disableTriggers() {
+		$this->triggersAllowed = false;
+		return $this;
+	}
+
+	public function enableTriggers() {
+		$this->triggersAllowed = true;
+		return $this;
+	}
+
+	protected final function runTrigger($input, $triggerName) {
+		call_user_func($this->prepareTrigger($input, $triggerName));
+
+		return $this;
+	}
+
+	protected final function prepareTrigger($input, $triggerName) {
+		$objName = $this->getObjectName();
+		if(
+			!$this->triggersAllowed ||
+			!ClassUtils::isInstanceOf($objName, $triggerName)
+		) {
+			return (function(){ });
+		}
+
+		$method = explode('\\', $triggerName);
+		$method = lcfirst(end($method));
+
+		$check = function($obj) use ($objName) {
+			if(!($obj instanceof $objName)) {
+				$obj = $this->getById($obj);
+			}
+			return $obj;
+		};
+
+		if(is_array($input)) {
+			$input = array_map($check, $input);
+		} else {
+			$input = array($check($input));
+		}
+
+		return function() use (&$input, $method) {
+			foreach($input as $obj) {
+				call_user_func(array($obj, $method));
+			}
+		};
 	}
 }

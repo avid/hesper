@@ -19,7 +19,7 @@ final class EnumerationClassBuilder extends OnceBuilder {
 		$out = self::getHead();
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Business;
+namespace {$class->getNamespace()};
 
 use Hesper\Core\Base\Enumeration;
 

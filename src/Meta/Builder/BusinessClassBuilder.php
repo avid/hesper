@@ -60,7 +60,7 @@ EOT;
 		}
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Business;
+namespace {$class->getNamespace()};
 
 
 EOT;
@@ -87,7 +87,7 @@ EOT;
 				$parent = $class;
 
 				while ($parent = $parent->getParent()) {
-					$info = new \ReflectionClass($parent->getName());
+					$info = new \ReflectionClass('\\' . $parent->getNamespace() . '\\' . $parent->getName());
 
 					if ($info->hasMethod('create') && ($info->getMethod('create')
 					                                        ->getParameters() > 0)

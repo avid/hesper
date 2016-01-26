@@ -25,7 +25,7 @@ final class ProtoClassBuilder extends OnceBuilder {
 		}
 
 		$out .= <<<EOT
-namespace {$class->getNamespace()}\Proto;
+namespace {$class->getProtoNamespace()};
 
 use {$class->getAutoProtoClass()};
 
