@@ -35,6 +35,11 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	public static function dumpFile($path, $content) {
 		$content = trim($content);
 
+		$dirname = dirname($path);
+		if (!is_dir($dirname)) {
+			mkdir($dirname, 0755, true);
+		}
+
 		if (is_readable($path)) {
 			$pattern = ['@\/\*(.*)\*\/@sU', '@[\r\n]@sU'];
 
@@ -102,9 +107,9 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	 * @return BasePattern
 	 **/
 	protected function buildBusiness(MetaClass $class) {
-		$this->dumpFile(HESPER_META_AUTO_BUSINESS_DIR . 'Auto' . $class->getName() . EXT_CLASS, Format::indentize(AutoClassBuilder::build($class)));
+		$this->dumpFile($class->getAutoPath() . $class->getName() . EXT_CLASS, Format::indentize(AutoClassBuilder::build($class)));
 
-		$userFile = HESPER_META_BUSINESS_DIR . $class->getName() . EXT_CLASS;
+		$userFile = $class->getPath() . $class->getName() . EXT_CLASS;
 
 		if (MetaConfiguration::me()
 		                     ->isForcedGeneration() || !file_exists($userFile)

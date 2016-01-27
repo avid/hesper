@@ -45,19 +45,10 @@ HELP;
 	{
 		Hesper\Core\Base\Assert::isTrue(defined('PATH_CLASSES'), 'constant PATH_CLASSES must be defined');
 
-		if (!defined('HESPER_META_BUSINESS_DIR_NAME'))
-			define('HESPER_META_BUSINESS_DIR_NAME', 'Business');
-
 		if (!defined('HESPER_META_DAO_DIR'))
 			define(
 				'HESPER_META_DAO_DIR',
 				PATH_CLASSES.'DAO'.DIRECTORY_SEPARATOR
-			);
-		
-		if (!defined('HESPER_META_BUSINESS_DIR'))
-			define(
-				'HESPER_META_BUSINESS_DIR',
-				PATH_CLASSES.HESPER_META_BUSINESS_DIR_NAME.DIRECTORY_SEPARATOR
 			);
 		
 		if (!defined('HESPER_META_PROTO_DIR'))
@@ -67,12 +58,6 @@ HELP;
 			);
 
 		define('HESPER_META_AUTO_DIR', PATH_CLASSES.'Auto'.DIRECTORY_SEPARATOR);
-		
-		if (!defined('HESPER_META_AUTO_BUSINESS_DIR'))
-			define(
-				'HESPER_META_AUTO_BUSINESS_DIR',
-				HESPER_META_AUTO_DIR.HESPER_META_BUSINESS_DIR_NAME.DIRECTORY_SEPARATOR
-			);
 		
 		define(
 			'HESPER_META_AUTO_PROTO_DIR',
@@ -95,18 +80,12 @@ HELP;
 		
 		if (!is_dir(HESPER_META_AUTO_DIR))
 			mkdir(HESPER_META_AUTO_DIR, 0755, true);
-		
-		if (!is_dir(HESPER_META_AUTO_BUSINESS_DIR))
-			mkdir(HESPER_META_AUTO_BUSINESS_DIR, 0755);
 			
 		if (!is_dir(HESPER_META_AUTO_PROTO_DIR))
 			mkdir(HESPER_META_AUTO_PROTO_DIR, 0755);
 		
 		if (!is_dir(HESPER_META_AUTO_DAO_DIR))
 			mkdir(HESPER_META_AUTO_DAO_DIR, 0755);
-		
-		if (!is_dir(HESPER_META_BUSINESS_DIR))
-			mkdir(HESPER_META_BUSINESS_DIR, 0755, true);
 		
 		if (!is_dir(HESPER_META_PROTO_DIR))
 			mkdir(HESPER_META_PROTO_DIR, 0755, true);

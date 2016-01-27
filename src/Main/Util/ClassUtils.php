@@ -188,7 +188,7 @@ final class ClassUtils extends StaticFactory {
 		}
 
 
-		foreach (glob(PATH_CLASSES . HESPER_META_BUSINESS_DIR_NAME . DIRECTORY_SEPARATOR . '/*' . EXT_CLASS, GLOB_NOSORT) as $file) {
+		foreach (glob(PATH_CLASSES . DIRECTORY_SEPARATOR . '/*' . EXT_CLASS, GLOB_NOSORT) as $file) {
 			$className = basename($file, EXT_CLASS);
 
 			if (!class_exists($className) && !interface_exists($className) && !(function_exists('trait_exists') && trait_exists($className))) {

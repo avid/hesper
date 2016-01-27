@@ -522,7 +522,16 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	public function checkForStaleFiles($drop = false) {
 		$this->getOutput()->newLine()->infoLine('Checking for stale files: ');
 
-		return $this->checkDirectory(HESPER_META_AUTO_BUSINESS_DIR, 'Auto', null, $drop)->checkDirectory(HESPER_META_AUTO_DAO_DIR, 'Auto', 'DAO', $drop)->checkDirectory(HESPER_META_AUTO_PROTO_DIR, 'AutoProto', null, $drop);
+		$dirs = scandir(HESPER_META_AUTO_DIR);
+		if (is_array($dirs)) {
+			foreach ($dirs as $dir) {
+				if (is_dir(HESPER_META_AUTO_DIR.$dir) && ($dir != '.' && $dir != '..')) {
+					$this->checkDirectory(HESPER_META_AUTO_DIR.$dir, 'Auto', null, $drop);
+				}
+			}
+		}
+
+		return $this->checkDirectory(HESPER_META_AUTO_DAO_DIR, 'Auto', 'DAO', $drop)->checkDirectory(HESPER_META_AUTO_PROTO_DIR, 'AutoProto', null, $drop);
 	}
 
 	/**

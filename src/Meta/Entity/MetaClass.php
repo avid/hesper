@@ -21,15 +21,17 @@ use Hesper\Meta\Type\IntegerType;
  */
 class MetaClass {
 
-	private $namespace     = null;
-	private $autoNamespace = null;
-	private $autoDaoNamespace = null;
-	private $daoNamespace = null;
+	private $namespace          = null;
+	private $autoNamespace      = null;
+	private $autoDaoNamespace   = null;
+	private $daoNamespace       = null;
 	private $autoProtoNamespace = null;
-	private $protoNamespace = null;
-	private $name          = null;
-	private $tableName     = null;
-	private $type          = null;
+	private $protoNamespace     = null;
+	private $name               = null;
+	private $tableName          = null;
+	private $type               = null;
+	private $path               = null;
+	private $autoPath           = null;
 
 	private $parent = null;
 
@@ -58,6 +60,8 @@ class MetaClass {
 		$this->autoProtoNamespace = implode('\\', array_merge($parts, ['Auto', 'Proto']));
 		$this->daoNamespace = implode('\\', array_merge($parts, ['DAO']));
 		$this->protoNamespace = implode('\\', array_merge($parts, ['Proto']));
+		$this->path = PATH_CLASSES.$lastPart.DIRECTORY_SEPARATOR;
+		$this->autoPath = HESPER_META_AUTO_DIR.DIRECTORY_SEPARATOR.$lastPart.DIRECTORY_SEPARATOR;
 
 		$dumb = strtolower(preg_replace(':([A-Z]):', '_\1', $name));
 
@@ -457,5 +461,19 @@ class MetaClass {
 		return $this->protoNamespace;
 	}
 
+	/**
+	 * @return null|string
+	 */
+	public function getPath()
+	{
+		return $this->path;
+	}
 
+	/**
+	 * @return null|string
+	 */
+	public function getAutoPath()
+	{
+		return $this->autoPath;
+	}
 }

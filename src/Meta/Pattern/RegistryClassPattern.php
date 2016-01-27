@@ -32,7 +32,7 @@ class RegistryClassPattern extends BasePattern {
      * @return RegistryClassPattern
      **/
     public function build(MetaClass $class) {
-        $userFile = HESPER_META_BUSINESS_DIR . $class->getName() . EXT_CLASS;
+        $userFile = $class->getPath() . $class->getName() . EXT_CLASS;
 
         if (
             MetaConfiguration::me()->isForcedGeneration()
