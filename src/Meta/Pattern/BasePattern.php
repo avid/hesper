@@ -107,7 +107,7 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	 * @return BasePattern
 	 **/
 	protected function buildBusiness(MetaClass $class) {
-		$this->dumpFile($class->getAutoPath() . $class->getName() . EXT_CLASS, Format::indentize(AutoClassBuilder::build($class)));
+		$this->dumpFile($class->getAutoPath() . 'Auto' . $class->getName() . EXT_CLASS, Format::indentize(AutoClassBuilder::build($class)));
 
 		$userFile = $class->getPath() . $class->getName() . EXT_CLASS;
 
