@@ -50,14 +50,14 @@ class MetaClass {
 		$this->name = $name;
 		$this->namespace = $namespace;
 
-		$rootParts = explode('\\', $namespace);
-		$lastPart = end($rootParts);
-		array_splice($rootParts, 1);
-		$this->autoNamespace = implode('\\', array_merge($rootParts, ['Auto', $lastPart]));
-		$this->autoDaoNamespace = implode('\\', array_merge($rootParts, ['Auto', 'DAO']));
-		$this->autoProtoNamespace = implode('\\', array_merge($rootParts, ['Auto', 'Proto']));
-		$this->daoNamespace = implode('\\', array_merge($rootParts, ['DAO']));
-		$this->protoNamespace = implode('\\', array_merge($rootParts, ['Proto']));
+		$parts = explode('\\', $namespace);
+		$lastPart = end($parts);
+		array_splice($parts, count($parts) - 1);
+		$this->autoNamespace = implode('\\', array_merge($parts, ['Auto', $lastPart]));
+		$this->autoDaoNamespace = implode('\\', array_merge($parts, ['Auto', 'DAO']));
+		$this->autoProtoNamespace = implode('\\', array_merge($parts, ['Auto', 'Proto']));
+		$this->daoNamespace = implode('\\', array_merge($parts, ['DAO']));
+		$this->protoNamespace = implode('\\', array_merge($parts, ['Proto']));
 
 		$dumb = strtolower(preg_replace(':([A-Z]):', '_\1', $name));
 
