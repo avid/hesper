@@ -9,6 +9,13 @@ namespace Hesper\Main\Base;
 
 use Hesper\Core\Base\Enum;
 use Hesper\Core\Exception\MissingElementException;
+use Hesper\Main\Util\Storage\Engines\StorageEngine;
+use Hesper\Main\Util\Storage\Engines\StorageEngineFTP;
+use Hesper\Main\Util\Storage\Engines\StorageEngineImageShack;
+use Hesper\Main\Util\Storage\Engines\StorageEngineLocal;
+use Hesper\Main\Util\Storage\Engines\StorageEngineUploadedStatic;
+use Hesper\Main\Util\Storage\Engines\StorageEngineURL;
+use Hesper\Main\Util\Storage\Engines\StorageEngineWebDAV;
 
 class StorageEngineType extends Enum {
     const
@@ -21,13 +28,13 @@ class StorageEngineType extends Enum {
         LOCAL = 40;
 
     protected static $names = array(
-        self::TMP => 'StorageEngine',
-        self::UPLOADED => 'StorageEngineUploadedStatic',
-        self::URL => 'StorageEngineURL',
-        self::WEBDAV => 'StorageEngineWebDAV',
-        self::FTP => 'StorageEngineFTP',
-        self::IMAGESHACK => 'StorageEngineImageShack',
-        self::LOCAL => 'StorageEngineLocal',
+        self::TMP => StorageEngine::class,
+        self::UPLOADED => StorageEngineUploadedStatic::class,
+        self::URL => StorageEngineURL::class,
+        self::WEBDAV => StorageEngineWebDAV::class,
+        self::FTP => StorageEngineFTP::class,
+        self::IMAGESHACK => StorageEngineImageShack::class,
+        self::LOCAL => StorageEngineLocal::class,
     );
 
     /**
@@ -103,6 +110,10 @@ class StorageEngineType extends Enum {
         return new self(self::IMAGESHACK);
     }
 
+    /**
+     * @return StorageEngineType
+     */
+    public static function local() {
+        return new self(self::LOCAL);
+    }
 }
-
-?>

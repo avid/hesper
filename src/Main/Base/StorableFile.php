@@ -13,7 +13,7 @@ use Hesper\Core\Exception\WrongArgumentException;
 use Hesper\Main\DAO\Events\OnAfterDrop;
 use Hesper\Main\DAO\Events\OnBeforeSave;
 use Hesper\Main\Util\Storage\Engines\StorageEngine;
-use Hesper\Main\Util\Storage\StorageEngineType;
+use Hesper\Main\Util\Storage\StorageConfig;
 
 abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, OnAfterDrop {
 
@@ -100,7 +100,6 @@ abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, 
         catch(Exception $e) {
             throw new Exception('No default storage found', 0, $e);
         }
-
         return $default;
     }
 
