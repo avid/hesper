@@ -45,7 +45,7 @@ class PrototypedUtils {
                 $exclude[] = $prop->getClassName();
             }
             $class = $prop->getClassName();
-            if (strlen($class) && is_subclass_of($class, 'Prototyped')) {
+            if (strlen($class) && is_subclass_of($class, Prototyped::class)) {
                 if ( !in_array($class, $exclude) && $depth > 0) {
                     $values = array_merge($values,
                         self::getFullPropertyList($class::proto(), $depth-1, $prefix . $prop->getName() . '.', $exclude)
@@ -108,7 +108,7 @@ class PrototypedUtils {
             /** @var $property LightMetaProperty */
             $property = $subProto->getPropertyByName($propertyName);
             $class = $property->getClassName();
-            if (strlen($class) && is_subclass_of($class, 'Prototyped'))
+            if (strlen($class) && is_subclass_of($class, Prototyped::class))
                 $subProto = $class::proto();
             else break;
         }
@@ -337,7 +337,7 @@ class PrototypedUtils {
             return $arr;
 
         Assert::isInstance(
-            current($objects), 'Prototyped',
+            current($objects), Prototyped::class,
             'only prototyped lists accepted'
         );
 
