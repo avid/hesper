@@ -356,7 +356,7 @@ class PrototypedUtils {
             return $out;
 
         Assert::isInstance(
-            current($objects), 'Prototyped',
+            current($objects), Prototyped::class,
             'only prototyped lists accepted'
         );
 
