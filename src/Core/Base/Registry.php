@@ -70,7 +70,7 @@ abstract class Registry extends NamedObject implements \Serializable {
     /**
      * Array of object
      * @static
-     * @return array
+     * @return static[]
      */
     public static function getList() {
         $list = array();
