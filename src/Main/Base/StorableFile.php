@@ -92,7 +92,8 @@ abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, 
 
     /**
      * @return StorageEngineType
-     **/
+     * @throws Exception
+     */
     public static function getDefaultStorage() {
         try {
             $default = StorageConfig::me()->getDefaultEngine();
