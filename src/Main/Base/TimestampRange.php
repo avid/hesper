@@ -7,6 +7,8 @@
  */
 namespace Hesper\Main\Base;
 
+use Hesper\Core\Base\Timestamp;
+
 /**
  * Class TimestampRange
  * @package Hesper\Main\Base
@@ -48,6 +50,6 @@ class TimestampRange extends DateRange {
 	}
 
 	protected function getObjectName() {
-		return '\Hesper\Core\Base\Timestamp';
+		return Timestamp::class;
 	}
 }
