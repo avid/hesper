@@ -28,6 +28,9 @@ class IdentifiableObject implements Identifiable, DialectString {
 		return $io->setId($id);
 	}
 
+	/**
+	 * @return integer|string
+	 */
 	public function getId() {
 		if ($this->id instanceof Identifier && $this->id->isFinalized()) {
 			return $this->id->getId();

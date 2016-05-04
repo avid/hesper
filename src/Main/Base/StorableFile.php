@@ -10,6 +10,7 @@ use Exception;
 use Hesper\Core\Base\IdentifiableObject;
 use Hesper\Core\Base\Timestamp;
 use Hesper\Core\Exception\WrongArgumentException;
+use Hesper\Core\Exception\WrongStateException;
 use Hesper\Main\DAO\Events\OnAfterDrop;
 use Hesper\Main\DAO\Events\OnBeforeSave;
 use Hesper\Main\Util\Storage\Engines\StorageEngine;
@@ -92,7 +93,8 @@ abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, 
 
     /**
      * @return StorageEngineType
-     **/
+     * @throws Exception
+     */
     public static function getDefaultStorage() {
         try {
             $default = StorageConfig::me()->getDefaultEngine();
@@ -313,6 +315,16 @@ abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, 
 		    $link = str_replace(['http:', 'https:'], '', $link);
 	    }
 	    return $link;
+    }
+
+    public function getPath() {
+        if( $this->getBaseStorageEngineTypeId()!=StorageEngineType::LOCAL ) {
+            throw new WrongStateException();
+        }
+        $config = StorageConfig::me()->getConfig(StorageEngineType::create($this->getBaseStorageEngineTypeId()), $this->getBaseStorageEngineConfig());
+        $path = realpath($config['path'].DIRECTORY_SEPARATOR.$this->getFileName());
+        return $path;
+
     }
 
     public function getFile() {

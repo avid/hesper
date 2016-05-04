@@ -30,6 +30,7 @@ class StorageConfig extends Singleton {
         } else {
             $this->configs[$type->getId()][$link] = $config;
         }
+        return $this;
     }
 
     public function getConfig(StorageEngineType $type, $link) {

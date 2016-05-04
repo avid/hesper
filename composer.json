@@ -1,5 +1,5 @@
 {
-	"name": "avid/hesper",
+	"name": "hesper/hesper",
 	"type": "library",
 	"description": "Hesper is the mature multi-purpose object-oriented PHP framework. It is a logical continuation of onPHP framework.",
 	"authors": [

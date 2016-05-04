@@ -149,7 +149,7 @@ final class HeaderUtils extends StaticFactory {
 		$languages = [];
 		preg_match_all(
 			'/([a-z]{1,8}(?:-[a-z]{1,8})?)\s*(?:;\s*q\s*=\s*(1|0\.[0-9]+))?/i',
-			$_SERVER['HTTP_ACCEPT_LANGUAGE'],
+			isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '',
 			$parsed
 		);
 		for($i=0;$i<count($parsed[0]);$i++) {
