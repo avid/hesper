@@ -10,7 +10,7 @@ namespace Hesper\Core\Cache;
 use Hesper\Core\Exception\BaseException;
 
 /**
- * Connector for PECL's Memcache extension by Antony Dovgal.
+ * Connector for PECL's Memcached extension by Antony Dovgal.
  * @see     http://tony2001.phpclub.net/
  * @see     http://pecl.php.net/package/memcache
  * @package Hesper\Core\Cache
@@ -183,7 +183,8 @@ class PeclMemcached extends CachePeer {
 		$this->ensureTriedToConnect();
 
 		try {
-			return $this->instance->$action($key, $value, $this->compress ? MEMCACHE_COMPRESSED : false, $expires);
+			$this->instance->setOption(\Memcached::OPT_COMPRESSION, $this->compress);
+			return $this->instance->$action($key, $value, time() + $expires);
 		} catch (BaseException $e) {
 			return $this->alive = false;
 		}
