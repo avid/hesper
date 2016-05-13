@@ -173,12 +173,16 @@ final class Form extends RegulatedForm {
 	/**
 	 * Returns plain list of error's labels
 	 **/
-	public function getTextualErrors() {
+	public function getTextualErrors($withName = false) {
 		$list = [];
 
 		foreach (array_keys($this->labels) as $name) {
 			if ($label = $this->getTextualErrorFor($name)) {
-				$list[] = $label;
+				if ($withName) {
+					$list[$name] = $label;
+				} else {
+					$list[] = $label;
+				}
 			}
 		}
 
