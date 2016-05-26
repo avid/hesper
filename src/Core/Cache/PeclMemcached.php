@@ -183,7 +183,6 @@ class PeclMemcached extends CachePeer {
 		$this->ensureTriedToConnect();
 
 		try {
-			$this->instance->setOption(\Memcached::OPT_COMPRESSION, $this->compress);
 			return $this->instance->$action($key, $value, time() + $expires);
 		} catch (BaseException $e) {
 			return $this->alive = false;
