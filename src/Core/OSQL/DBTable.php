@@ -141,7 +141,7 @@ final class DBTable implements DialectString {
 				if ($column->getType()->getId() != $targetColumns[$name]->getType()->getId()) {
 					$targetColumn = $targetColumns[$name];
 
-					$out[] = $head . ' ALTER COLUMN ' . $dialect->quoteField($name) . ' TYPE ' . $targetColumn->getType()->toString() . ($targetColumn->getType()->hasSize() ? '(' . $targetColumn->getType()->getSize() . ($targetColumn->getType()->hasPrecision() ? ', ' . $targetColumn->getType()->getPrecision() : null) . ')' : null) . ';';
+					$out[] = $head . ' ALTER COLUMN ' . $dialect->quoteField($name) . ' TYPE ' . $targetColumn->getType()->toString() . ($targetColumn->getType()->hasSize() ? '(' . $targetColumn->getType()->getSize() . ($targetColumn->getType()->hasPrecision() ? ', ' . $targetColumn->getType()->getPrecision() : null) . ')' : null) . ( (in_array($targetColumn->getType()->getId(), array(DataType::JSON, DataType::JSONB ))) ? ' USING NULL' : '') .';';
 				}
 
 				if ($column->getType()->isNull() != $targetColumns[$name]->getType()->isNull()) {

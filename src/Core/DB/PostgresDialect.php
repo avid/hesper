@@ -11,6 +11,7 @@ use Hesper\Core\Base\Assert;
 use Hesper\Core\OSQL\DataType;
 use Hesper\Core\OSQL\DBColumn;
 use Hesper\Core\OSQL\DialectString;
+use Hesper\Core\Exception\WrongArgumentException;
 
 /**
  * PostgreSQL dialect.
@@ -140,6 +141,34 @@ final class PostgresDialect extends Dialect {
 		}
 
 		return $string;
+	}
+
+	public function quoteArray($values, $type)
+	{
+		if (empty($values)) {
+			return self::LITERAL_NULL;
+		}
+		// add qoutes
+		foreach ($values as &$item) {
+			if ($type === DataType::INTEGER) {
+				$item = intval($item);
+			} else if ($type === DataType::REAL) {
+				$item = doubleval($item);
+			} elseif ($type === DataType::VARCHAR) {
+				$item = $this->quoteValue($item);
+			} else {
+				throw new WrongArgumentException('unknown type of array!');
+			}
+		}
+		return 'ARRAY['.implode(', ',$values).']';
+	}
+
+
+	public function quoteJson($values, $type) {
+		if( empty($values) ) {
+			return self::LITERAL_NULL;
+		}
+		return $this->quoteValue(json_encode($values));
 	}
 
 	protected function makeSequenceName(DBColumn $column) {

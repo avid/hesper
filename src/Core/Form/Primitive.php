@@ -40,6 +40,7 @@ use Hesper\Core\Form\Primitive\PrimitiveInteger;
 use Hesper\Core\Form\Primitive\PrimitiveIntegerIdentifier;
 use Hesper\Core\Form\Primitive\PrimitiveIpAddress;
 use Hesper\Core\Form\Primitive\PrimitiveIpRange;
+use Hesper\Core\Form\Primitive\PrimitiveJson;
 use Hesper\Core\Form\Primitive\PrimitiveList;
 use Hesper\Core\Form\Primitive\PrimitiveMultiList;
 use Hesper\Core\Form\Primitive\PrimitiveNoValue;
@@ -247,6 +248,23 @@ final class Primitive extends StaticFactory {
 	 **/
 	public static function hstore($name) {
 		return new PrimitiveHstore($name);
+	}
+
+
+	/**
+	 * @param $name
+	 * @return PrimitiveArray
+	 */
+	public static function json($name) {
+		return new PrimitiveJson($name);
+	}
+
+	/**
+	 * @param $name
+	 * @return PrimitiveArray
+	 */
+	public static function jsonb($name) {
+		return new PrimitiveJson($name);
 	}
 
 	/**
