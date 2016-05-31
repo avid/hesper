@@ -22,7 +22,7 @@ class JsonbType extends ArrayType {
 
     public function toColumnType()
     {
-        return 'DataType::create(DataType::JSONB)';
+        return '\Hesper\Core\OSQL\DataType::jsonb()';
     }
 
     //Нельзя измерить JSON, у него нет длины в строгом смысле
