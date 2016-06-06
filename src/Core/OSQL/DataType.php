@@ -177,6 +177,14 @@ final class DataType extends Enum implements DialectString {
 		return new self(self::UUID);
 	}
 
+	public static function json() {
+		return new self(self::JSON);
+	}
+
+	public static function jsonb() {
+		return new self(self::JSONB);
+	}
+
 	public function getSize() {
 		return $this->size;
 	}
