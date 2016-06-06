@@ -3,44 +3,43 @@
  * @project    Hesper Framework
  * @author     Alex Gorbylev
  * @originally onPHP Framework
- * @originator Georgiy T. Kutsurua
  */
 namespace Hesper\Core\Form\Primitive;
 
 use Hesper\Core\Base\Assert;
-use Hesper\Core\Base\Enum;
+use Hesper\Core\Base\Registry;
 use Hesper\Core\Exception\WrongArgumentException;
 use Hesper\Core\Exception\WrongStateException;
 use Hesper\Main\Util\ArrayUtils;
 
 /**
- * Class PrimitiveEnumList
- * @package Hesper\Core\Form\Primitive
- */
-final class PrimitiveEnumList extends PrimitiveEnum {
-
-	protected $value = [];
+ * @ingroup Primitives
+ **/
+final class PrimitiveRegistryList extends PrimitiveRegistry
+{
+	protected $value = array();
 
 	/**
-	 * @return PrimitiveEnumList
+	 * @return PrimitiveRegistryList
 	 **/
-	public function clean() {
+	public function clean()
+	{
 		parent::clean();
 
 		// restoring our very own default
-		$this->value = [];
+		$this->value = array();
 
 		return $this;
 	}
 
 	/**
-	 * @return PrimitiveEnumList
+	 * @return PrimitiveRegistryList
 	 **/
-	public function setValue(/* Enum */
-		$value) {
+	public function setValue(/* Registry */ $value)
+	{
 		if ($value) {
 			Assert::isArray($value);
-			Assert::isInstance(current($value), Enum::class);
+			Assert::isInstance(current($value), Registry::class);
 		}
 
 		$this->value = $value;
@@ -48,46 +47,50 @@ final class PrimitiveEnumList extends PrimitiveEnum {
 		return $this;
 	}
 
-	public function importValue($value) {
+	public function importValue($value)
+	{
 		if (is_array($value)) {
 			try {
-				Assert::isInteger(current($value));
+				Assert::isScalar(current($value));
 
-				return $this->import([$this->name => $value]);
+				return $this->import(
+					array($this->name => $value)
+				);
 			} catch (WrongArgumentException $e) {
-				return $this->import([$this->name => ArrayUtils::getIdsArray($value)]);
+				return $this->import(
+					array($this->name => ArrayUtils::getIdsArray($value))
+				);
 			}
 		}
 
 		return parent::importValue($value);
 	}
 
-	public function import($scope) {
-		if (!$this->className) {
-			throw new WrongStateException("no class defined for PrimitiveIdentifierList '{$this->name}'");
-		}
+	public function import($scope)
+	{
+		if (!$this->className)
+			throw new WrongStateException(
+				"no class defined for PrimitiveIdentifierList '{$this->name}'"
+			);
 
-		if (!BasePrimitive::import($scope)) {
+		if (!BasePrimitive::import($scope))
 			return null;
-		}
 
-		if (!is_array($scope[$this->name])) {
+		if (!is_array($scope[$this->name]))
 			return false;
-		}
 
 		$list = array_unique($scope[$this->name]);
 
-		$values = [];
+		$values = array();
 
 		foreach ($list as $id) {
-			if (!Assert::checkInteger($id)) {
+			if (!Assert::checkScalar($id))
 				return false;
-			}
 
 			$values[] = $id;
 		}
 
-		$objectList = [];
+		$objectList = array();
 
 		foreach ($values as $value) {
 			$className = $this->className;
@@ -96,17 +99,16 @@ final class PrimitiveEnumList extends PrimitiveEnum {
 
 		if (count($objectList) == count($values)) {
 			$this->value = $objectList;
-
 			return true;
 		}
 
 		return false;
 	}
 
-	public function exportValue() {
-		if (!$this->value) {
+	public function exportValue()
+	{
+		if (!$this->value)
 			return null;
-		}
 
 		return ArrayUtils::getIdsArray($this->value);
 	}

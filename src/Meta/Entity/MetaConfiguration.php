@@ -12,6 +12,7 @@ use Hesper\Core\Base\Enum;
 use Hesper\Core\Base\Enumeration;
 use Hesper\Core\Base\Instantiatable;
 use Hesper\Core\Base\Prototyped;
+use Hesper\Core\Base\Registry;
 use Hesper\Core\Base\Singleton;
 use Hesper\Core\DB\DBPool;
 use Hesper\Core\DB\PostgresDialect;
@@ -46,6 +47,7 @@ use Hesper\Meta\Pattern\RegistryClassPattern;
 use Hesper\Meta\Pattern\SpookedClassPattern;
 use Hesper\Meta\Pattern\SpookedEnumerationPattern;
 use Hesper\Meta\Pattern\SpookedEnumPattern;
+use Hesper\Meta\Pattern\SpookedRegistryPattern;
 use Hesper\Meta\Pattern\ValueObjectPattern;
 use Hesper\Meta\Type\FixedLengthStringType;
 use Hesper\Meta\Type\HttpUrlType;
@@ -181,7 +183,15 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		foreach ($this->classes as $name => $class) {
 			foreach ($class->getProperties() as $property) {
 				if ($property->getRelationId() == MetaRelation::ONE_TO_ONE) {
-					if ((($property->getType()->getClass()->getPattern() instanceof SpookedClassPattern) || ($property->getType()->getClass()->getPattern() instanceof SpookedEnumerationPattern) || ($property->getType()->getClass()->getPattern() instanceof SpookedEnumPattern)) && ($property->getFetchStrategy() && ($property->getFetchStrategy()->getId() != FetchStrategy::LAZY))) {
+					if (
+						(
+							($property->getType()->getClass()->getPattern() instanceof SpookedClassPattern) ||
+							($property->getType()->getClass()->getPattern() instanceof SpookedEnumerationPattern) ||
+							($property->getType()->getClass()->getPattern() instanceof SpookedEnumPattern) ||
+							($property->getType()->getClass()->getPattern() instanceof SpookedRegistryPattern)
+						) &&
+						($property->getFetchStrategy() && ($property->getFetchStrategy()->getId() != FetchStrategy::LAZY))
+					) {
 						$property->setFetchStrategy(FetchStrategy::cascade());
 					} else {
 						$this->checkRecursion($property, $class);
@@ -269,8 +279,11 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		require HESPER_META_AUTO_DIR . 'schema.php';
 
 		foreach ($this->classes as $class) {
-			if ($class->getTypeId() == MetaClassType::CLASS_ABSTRACT || $class->getPattern() instanceof EnumerationClassPattern || $class->getPattern() instanceof EnumClassPattern
-
+			if (
+				$class->getTypeId() == MetaClassType::CLASS_ABSTRACT ||
+				$class->getPattern() instanceof EnumerationClassPattern ||
+				$class->getPattern() instanceof EnumClassPattern ||
+				$class->getPattern() instanceof RegistryClassPattern
 			) {
 				continue;
 			}
@@ -364,6 +377,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 					$class->getPattern() instanceof SpookedClassPattern ||
 					$class->getPattern() instanceof SpookedEnumerationPattern ||
 					$class->getPattern() instanceof SpookedEnumPattern ||
+					$class->getPattern() instanceof SpookedRegistryPattern ||
 					$class->getPattern() instanceof InternalClassPattern
 				) &&
 				(class_exists(MetaClassNameBuilder::getClassOfMetaClass($class, true)))
@@ -392,7 +406,11 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 				}
 
 				// special handling for Enumeration instances
-				if ($class->getPattern() instanceof EnumerationClassPattern || $class->getPattern() instanceof EnumClassPattern || $class->getPattern() instanceof RegistryClassPattern) {
+				if (
+					$class->getPattern() instanceof EnumerationClassPattern ||
+					$class->getPattern() instanceof EnumClassPattern ||
+					$class->getPattern() instanceof RegistryClassPattern
+				) {
 					$object = new $className(call_user_func([$className, 'getAnyId']));
 
 					Assert::isTrue(unserialize(serialize($object)) == $object);
@@ -400,7 +418,11 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 					$out->info(', ');
 
 					if ($this->checkEnumerationRefIntegrity) {
-						if ($object instanceof Enumeration || $object instanceof Enum) {
+						if (
+							$object instanceof Enumeration ||
+							$object instanceof Enum ||
+							$object instanceof Registry
+						) {
 							$this->checkEnumerationReferentialIntegrity($object, $class->getTableName());
 						}
 					}
@@ -684,7 +706,15 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		if ($class->getType() && $class->getTypeId() == MetaClassType::CLASS_SPOOKED) {
 			Assert::isFalse(count($class->getProperties()) > 1, 'spooked classes must have only identifier: ' . $class->getName());
 
-			Assert::isTrue(($class->getPattern() instanceof SpookedClassPattern || $class->getPattern() instanceof SpookedEnumerationPattern || $class->getPattern() instanceof SpookedEnumPattern), 'spooked classes must use spooked patterns only: ' . $class->getName());
+			Assert::isTrue(
+				(
+					$class->getPattern() instanceof SpookedClassPattern ||
+					$class->getPattern() instanceof SpookedEnumerationPattern ||
+					$class->getPattern() instanceof SpookedEnumPattern ||
+					$class->getPattern() instanceof SpookedRegistryPattern
+				),
+				'spooked classes must use spooked patterns only: ' . $class->getName()
+			);
 		}
 
 		foreach ($class->getProperties() as $property) {
@@ -833,7 +863,12 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 
 			if ($class->getPattern() instanceof InternalClassPattern) {
 				Assert::isTrue($metafile === HESPER_META . 'internal.xml', 'internal classes can be defined only in onPHP, sorry');
-			} elseif (($class->getPattern() instanceof SpookedClassPattern) || ($class->getPattern() instanceof SpookedEnumerationPattern) || ($class->getPattern() instanceof SpookedEnumPattern)) {
+			} elseif (
+				($class->getPattern() instanceof SpookedClassPattern) ||
+				($class->getPattern() instanceof SpookedEnumerationPattern) ||
+				($class->getPattern() instanceof SpookedEnumPattern) ||
+				($class->getPattern() instanceof SpookedRegistryPattern)
+			) {
 				$class->setType(new MetaClassType(MetaClassType::CLASS_SPOOKED));
 			}
 
@@ -972,7 +1007,10 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	}
 
 	private function checkEnumerationReferentialIntegrity($enumeration, $tableName) {
-		Assert::isTrue(($enumeration instanceof Enumeration || $enumeration instanceof Enum), 'argument enumeation must be instacne of Enumeration or Enum! gived, "' . gettype($enumeration) . '"');
+		Assert::isTrue(
+			($enumeration instanceof Enumeration || $enumeration instanceof Enum || $enumeration instanceof Registry),
+			'argument enumeation must be instacne of Enumeration or Enum! gived, "' . gettype($enumeration) . '"'
+		);
 
 		$updateQueries = null;
 
@@ -985,6 +1023,8 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		if ($enumeration instanceof Enumeration) {
 			$list = $enumeration->getList();
 		} elseif ($enumeration instanceof Enum) {
+			$list = ClassUtils::callStaticMethod($class . '::getList');
+		} elseif ($enumeration instanceof Registry) {
 			$list = ClassUtils::callStaticMethod($class . '::getList');
 		}
 

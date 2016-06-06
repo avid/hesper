@@ -16,6 +16,7 @@ use Hesper\Meta\Pattern\DictionaryClassPattern;
 use Hesper\Meta\Pattern\EnumClassPattern;
 use Hesper\Meta\Pattern\EnumerationClassPattern;
 use Hesper\Meta\Pattern\InternalClassPattern;
+use Hesper\Meta\Pattern\RegistryClassPattern;
 use Hesper\Meta\Pattern\StraightMappingPattern;
 use Hesper\Meta\Pattern\ValueObjectPattern;
 use Hesper\Meta\Type\BasePropertyType;
@@ -302,6 +303,9 @@ class MetaClassProperty {
 				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
 			} elseif ($pattern instanceof EnumClassPattern) {
 				$primitiveName = 'enum';
+				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
+			} elseif ($pattern instanceof RegistryClassPattern) {
+				$primitiveName = 'registry';
 				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
 			} elseif (($pattern instanceof DictionaryClassPattern || $pattern instanceof StraightMappingPattern) && ($identifier = $this->getType()->getClass()->getIdentifier())) {
 				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
