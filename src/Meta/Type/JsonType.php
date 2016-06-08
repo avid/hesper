@@ -3,7 +3,6 @@
 namespace Hesper\Meta\Type;
 
 use \Hesper\Core\Exception\UnimplementedFeatureException;
-use \Hesper\Core\OSQL\DataType;
 use \Hesper\Meta\Entity\MetaClass;
 use \Hesper\Meta\Entity\MetaClassProperty;
 use \Hesper\Core\Base\Assert;
@@ -23,7 +22,7 @@ class JsonType extends ArrayType {
 
     public function toColumnType()
     {
-        return  '\\' . DataType::class . '::json()';
+        return '\Hesper\Core\OSQL\DataType::json()';
     }
 
     //Нельзя измерить JSON, у него нет длины в строгом смысле

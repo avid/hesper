@@ -47,6 +47,9 @@ use Hesper\Core\Form\Primitive\PrimitiveNoValue;
 use Hesper\Core\Form\Primitive\PrimitivePlainList;
 use Hesper\Core\Form\Primitive\PrimitivePolymorphicIdentifier;
 use Hesper\Core\Form\Primitive\PrimitiveRange;
+use Hesper\Core\Form\Primitive\PrimitiveRegistry;
+use Hesper\Core\Form\Primitive\PrimitiveRegistryByValue;
+use Hesper\Core\Form\Primitive\PrimitiveRegistryList;
 use Hesper\Core\Form\Primitive\PrimitiveScalarIdentifier;
 use Hesper\Core\Form\Primitive\PrimitiveString;
 use Hesper\Core\Form\Primitive\PrimitiveTernary;
@@ -431,6 +434,30 @@ final class Primitive extends StaticFactory {
 	 **/
 	public static function uuidIdentifierList($name) {
 		return new PrimitiveUuidIdentifierList($name);
+	}
+
+	/**
+	 * @return PrimitiveRegistry
+	 **/
+	public static function registry($name)
+	{
+		return new PrimitiveRegistry($name);
+	}
+
+	/**
+	 * @return PrimitiveRegistryByValue
+	 **/
+	public static function registryByValue($name)
+	{
+		return new PrimitiveRegistryByValue($name);
+	}
+
+	/**
+	 * @return PrimitiveRegistryList
+	 **/
+	public static function registryList($name)
+	{
+		return new PrimitiveRegistryList($name);
 	}
 
 }

@@ -8,8 +8,11 @@
 namespace Hesper\Main\Base;
 
 use Hesper\Core\Base\Assert;
+use Hesper\Core\Base\Enum;
+use Hesper\Core\Base\Enumeration;
 use Hesper\Core\Base\Identifiable;
 use Hesper\Core\Base\Prototyped;
+use Hesper\Core\Base\Registry;
 use Hesper\Core\Base\Stringable;
 use Hesper\Core\DB\DBPool;
 use Hesper\Core\Form\Form;
@@ -92,7 +95,7 @@ class LightMetaProperty implements Stringable {
 
         if ($size) {
             if (($type == 'integer') || ($type == 'identifier') // obsoleted
-                || ($type == 'integerIdentifier') || ($type == 'enumeration') || ($type == 'enum')
+                || ($type == 'integerIdentifier') || ($type == 'enumeration') || ($type == 'enum') || ($type == 'registry')
             ) {
                 $property->min = self::$limits[$size][0];
                 $property->max = self::$limits[$size][1];
@@ -345,7 +348,11 @@ class LightMetaProperty implements Stringable {
             // BOVM: prevents segfault on >=php-5.2.5
             Assert::classExists($this->className);
 
-            if (!is_subclass_of($this->className, 'Enumeration') && !is_subclass_of($this->className, 'Enum')) {
+            if (
+                !is_subclass_of($this->className, Enumeration::class) &&
+                !is_subclass_of($this->className, Enum::class) &&
+                !is_subclass_of($this->className, Registry::class)
+            ) {
                 $remoteDao = call_user_func([$this->className, 'dao']);
 
                 $joinPrefix = $remoteDao->getJoinPrefix($this->columnName, $prefix);
@@ -386,6 +393,6 @@ class LightMetaProperty implements Stringable {
 
     public function isFormless() {
         // NOTE: enum here formless types
-        return in_array($this->type, ['enumeration', 'enum',]);
+        return in_array($this->type, ['enumeration', 'enum', 'registry',]);
     }
 }

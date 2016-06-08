@@ -8,6 +8,9 @@
 namespace Hesper\Main\Criteria;
 
 use Hesper\Core\Base\Assert;
+use Hesper\Core\Base\Enum;
+use Hesper\Core\Base\Enumeration;
+use Hesper\Core\Base\Registry;
 use Hesper\Core\Base\Singleton;
 use Hesper\Core\DB\DBPool;
 use Hesper\Core\DB\Dialect;
@@ -475,7 +478,11 @@ final class Criteria extends QueryIdentification {
 
 		foreach ($proto->getPropertyList() as $property) {
 			if (($property instanceof LightMetaProperty) && $property->getRelationId() == MetaRelation::ONE_TO_ONE && !$property->isGenericType() && ((!$property->getFetchStrategyId() && ($this->getFetchStrategy()->getId() == FetchStrategy::JOIN)) || ($property->getFetchStrategyId() == FetchStrategy::JOIN))) {
-				if (is_subclass_of($property->getClassName(), 'Enumeration') || is_subclass_of($property->getClassName(), 'Enum')) {
+				if (
+					is_subclass_of($property->getClassName(), Enumeration::class) ||
+					is_subclass_of($property->getClassName(), Enum::class) ||
+					is_subclass_of($property->getClassName(), Registry::class)
+				) {
 					// field already added by makeSelectHead
 					continue;
 				} elseif ($property->isInner()) {
