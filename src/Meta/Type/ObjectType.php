@@ -14,6 +14,7 @@ use Hesper\Meta\Entity\MetaConfiguration;
 use Hesper\Meta\Entity\MetaRelation;
 use Hesper\Meta\Pattern\EnumClassPattern;
 use Hesper\Meta\Pattern\EnumerationClassPattern;
+use Hesper\Meta\Pattern\RegistryClassPattern;
 
 /**
  * Class ObjectType
@@ -91,7 +92,11 @@ EOT;
 			if ($property->getFetchStrategyId() == FetchStrategy::LAZY) {
 				$className = $property->getType()->getClassName();
 
-				$isEnumeration = ($property->getType()->getClass()->getPattern() instanceof EnumerationClassPattern || $property->getType()->getClass()->getPattern() instanceof EnumClassPattern);
+				$isEnumeration = (
+					$property->getType()->getClass()->getPattern() instanceof EnumerationClassPattern ||
+					$property->getType()->getClass()->getPattern() instanceof EnumClassPattern ||
+					$property->getType()->getClass()->getPattern() instanceof RegistryClassPattern
+				);
 
 				$fetchObjectString = $isEnumeration ? "new {$className}(\$this->{$name}Id)" : "{$className}::dao()->getById(\$this->{$name}Id)";
 
