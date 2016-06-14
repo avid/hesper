@@ -306,7 +306,11 @@ EOT;
 	}
 
 	public function toColumnType() {
-		return $this->getClass()->getIdentifier()->getType()->toColumnType();
+		$type = $this->getClass()->getIdentifier()->getType();
+		if( $type instanceof StringType ) {
+			return $type->toColumnType( $this->getClass()->getIdentifier()->getSize() );
+		}
+		return $type->toColumnType();
 	}
 
 	public function getHint() {

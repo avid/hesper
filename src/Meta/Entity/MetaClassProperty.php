@@ -376,6 +376,12 @@ class MetaClassProperty {
 			return $out;
 		}
 
+		if( $this->getType() instanceof ObjectType && !$this->getType()->isGeneric() ) {
+			if( $this->getType()->getClass()->getIdentifier()->getType() instanceof StringType ) {
+				$this->size = $this->getType()->getClass()->getIdentifier()->getSize();
+			}
+		}
+
 		$column = <<<EOT
 addColumn(
 	\\Hesper\\Core\\OSQL\\DBColumn::create(

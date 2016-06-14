@@ -61,10 +61,12 @@ class PrimitiveRegistry extends IdentifiablePrimitive implements ListedPrimitive
 
 	public function importValue(/* Identifiable */ $value)
 	{
-		if ($value)
-			Assert::isEqual(get_class($value), $this->className);
-		else
+		if ($value) {
+			Assert::isInstance($value, $this->className);
+//			Assert::isEqual(get_class($value), $this->className);
+		} else {
 			return parent::importValue(null);
+		}
 
 		return $this->import(array($this->getName() => $value->getId()));
 	}
