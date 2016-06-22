@@ -14,6 +14,7 @@ use Hesper\Core\OSQL\DataType;
 use Hesper\Core\OSQL\DBColumn;
 use Hesper\Core\OSQL\DBValue;
 use Hesper\Core\OSQL\DialectString;
+use Hesper\Core\OSQL\Query;
 
 /**
  * Base (aka ANSI) SQL dialect.

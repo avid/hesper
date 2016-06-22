@@ -10,6 +10,7 @@ namespace Hesper\Core\DB;
 use Hesper\Core\Base\Assert;
 use Hesper\Core\Base\Identifier;
 use Hesper\Core\Exception\WrongArgumentException;
+use Hesper\Core\Logic\BinaryExpression;
 use Hesper\Core\OSQL\DataType;
 use Hesper\Core\OSQL\DBColumn;
 
@@ -95,6 +96,17 @@ class MyDialect extends Dialect {
 
 	public function postAutoincrement(DBColumn $column) {
 		return 'AUTO_INCREMENT';
+	}
+
+	public function logicToString($logic) {
+		switch ($logic) {
+			case BinaryExpression::REGEXP:
+				return 'REGEXP';
+			case BinaryExpression::NOT_REGEXP:
+				return 'NOT REGEXP';
+		}
+
+		return parent::logicToString($logic);
 	}
 
 	public function fullTextSearch($fields, $words, $logic) {

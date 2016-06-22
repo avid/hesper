@@ -158,6 +158,20 @@ final class Expression extends StaticFactory {
 	}
 
 	/**
+	 * @return BinaryExpression
+	 **/
+	public static function regexp($field, $value) {
+		return new BinaryExpression($field, $value, BinaryExpression::REGEXP);
+	}
+
+	/**
+	 * @return BinaryExpression
+	 **/
+	public static function notRegexp($field, $value) {
+		return new BinaryExpression($field, $value, BinaryExpression::NOT_REGEXP);
+	}
+
+	/**
 	 * @return EqualsLowerExpression
 	 **/
 	public static function eqLower($field, $value) {

@@ -40,6 +40,9 @@ final class BinaryExpression implements LogicalObject, MappableObject {
 	const SIMILAR_TO     = 'SIMILAR TO';
 	const NOT_SIMILAR_TO = 'NOT SIMILAR TO';
 
+	const REGEXP     = '~';
+	const NOT_REGEXP = '!~';
+
 	const ADD       = '+';
 	const SUBSTRACT = '-';
 	const MULTIPLY  = '*';
@@ -148,6 +151,12 @@ final class BinaryExpression implements LogicalObject, MappableObject {
 
 			case self::MOD:
 				return $both && $right && ($left % $right);
+
+			case self::REGEXP:
+				return preg_match("/{$right}/i", $left);
+
+			case self::NOT_REGEXP:
+				return !preg_match("/{$right}/i", $left);
 
 			default:
 				throw new UnsupportedMethodException("'{$this->logic}' doesn't supported yet");

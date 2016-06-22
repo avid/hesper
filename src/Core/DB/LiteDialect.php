@@ -10,6 +10,7 @@ namespace Hesper\Core\DB;
 use Hesper\Core\Base\Assert;
 use Hesper\Core\Base\Identifier;
 use Hesper\Core\Base\Instantiatable;
+use Hesper\Core\Logic\PostfixUnaryExpression;
 use Hesper\Core\OSQL\DataType;
 use Hesper\Core\OSQL\DBColumn;
 
