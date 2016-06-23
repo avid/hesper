@@ -32,4 +32,8 @@ class UuidUtils extends StaticFactory {
 		return preg_replace( '/([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})/iu', '$1-$2-$3-$4-$5', strtolower($hash) );
 	}
 
+	public static function stripDash( $uuid ) {
+		return str_replace('-', '', $uuid);
+	}
+
 }
