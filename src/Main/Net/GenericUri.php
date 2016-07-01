@@ -216,6 +216,15 @@ class GenericUri implements Stringable {
 		return $this;
 	}
 
+	/**
+	 * @return GenericUri
+	 **/
+	public function appendPath($path) {
+		$this->path .= $path;
+
+		return $this;
+	}
+
 	public function getPath() {
 		return $this->path;
 	}
