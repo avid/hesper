@@ -168,7 +168,8 @@ final class PostgresDialect extends Dialect {
 		if( empty($values) ) {
 			return self::LITERAL_NULL;
 		}
-		return $this->quoteValue(json_encode($values));
+		$json = str_replace('\\u0000', '', json_encode($values));
+		return $this->quoteValue($json);
 	}
 
 	protected function makeSequenceName(DBColumn $column) {
