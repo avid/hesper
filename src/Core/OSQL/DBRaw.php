@@ -14,18 +14,18 @@ use Hesper\Core\Logic\LogicalObject;
 
 /**
  * Karma's destroyer.
- * @deprecated since the begining of time
+ * Do not use it. Please.
  * @package Hesper\Core\OSQL
  */
 final class DBRaw implements LogicalObject {
 
 	private $string = null;
 
-	public function __construct($rawString) {
-		if (!defined('__I_HATE_MY_KARMA__')) {
-			throw new UnsupportedMethodException('do not use it. please.');
-		}
+	public static function create($rawString) {
+		return new self($rawString);
+	}
 
+	public function __construct($rawString) {
 		$this->string = $rawString;
 	}
 
