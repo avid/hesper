@@ -376,4 +376,8 @@ final class HttpRequest {
 
 		return $this;
 	}
+
+	public function isAjax() {
+		return $this->hasServerVar('HTTP_X_REQUESTED_WITH') && strtolower($this->getServerVar('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest';
+	}
 }
