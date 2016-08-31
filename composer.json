@@ -2,13 +2,17 @@
 	"name": "hesper/hesper",
 	"type": "library",
 	"description": "Hesper is the mature multi-purpose object-oriented PHP framework. It is a logical continuation of onPHP framework.",
+	"license": "GPL-3.0",
 	"authors": [
 		{
 			"name": "Alex Gorbylev",
-			"email": "alex@gorbylev.ru",
-			"homepage": "http://gorbylev.ru",
 			"role": "Creator/Developer"
+		},
+		{
+			"name": "onPHP Community",
+			"role": "Ideologist"
 		}
+
 	],
 	"autoload": {
 		"psr-4": {
