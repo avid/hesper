@@ -1,6 +1,6 @@
 <?php
 /**
- * @project binatex
+ * @project gettraf
  * @author  Alex Gorbylev
  */
 

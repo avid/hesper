@@ -460,4 +460,12 @@ final class Primitive extends StaticFactory {
 		return new PrimitiveRegistryList($name);
 	}
 
+	/**
+	 * @param $name
+	 * @return PrimitiveArray
+	 */
+	public static function arrayOfStrings($name) {
+		return new PrimitiveArray($name);
+	}
+
 }
