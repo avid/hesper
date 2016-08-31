@@ -5,10 +5,13 @@
 	"authors": [
 		{
 			"name": "Alex Gorbylev",
-			"email": "alex@gorbylev.ru",
-			"homepage": "http://gorbylev.ru",
 			"role": "Creator/Developer"
+		},
+		{
+			"name": "onPHP Community",
+			"role": "Ideologist"
 		}
+
 	],
 	"autoload": {
 		"psr-4": {
