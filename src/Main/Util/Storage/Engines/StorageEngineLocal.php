@@ -6,11 +6,31 @@
  */
 namespace Hesper\Main\Util\Storage\Engines;
 
+use Hesper\Core\Exception\WrongStateException;
 use InvalidArgumentException;
 
 class StorageEngineLocal extends StorageEngineStreamable {
 
-    protected function parseConfig ($data) {
+	protected $canCopy = true;
+
+	public function copy($from, $to = null) {
+		return copy($this->get($from), $this->getPath($to), $this->context);
+	}
+
+	public function rename ($from, $to) {
+		return rename($this->get($from), $this->getPath($to), $this->context);
+	}
+
+
+	public function get($file) {
+		if( is_readable($file) ) {
+			return $file;
+		}
+		return parent::get($file);
+	}
+
+
+	protected function parseConfig ($data) {
         if ( !isset($data['path']) ) {
             throw new InvalidArgumentException('Path must be configured');
         }
