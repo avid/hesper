@@ -27,6 +27,9 @@ final class CurlHttpClient implements HttpClient {
 	private $multiRequests      = [];
 	private $multiResponses     = [];
 	private $multiThreadOptions = [];
+	private $debug              = false;
+	private $debugInfo          = null;
+
 	/**
 	 * @deprecated in the furure will work like this value is false;
 	 */
@@ -217,6 +220,9 @@ final class CurlHttpClient implements HttpClient {
 		if (curl_exec($handle) === false) {
 			$code = curl_errno($handle);
 			throw new NetworkException('curl error, code: ' . $code . ' description: ' . curl_error($handle), $code);
+		}
+		if ($this->debug) {
+			$this->debugInfo = curl_getinfo($handle);
 		}
 
 		$this->makeResponse($handle, $response);
@@ -418,5 +424,21 @@ final class CurlHttpClient implements HttpClient {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param boolean $debug
+	 * @return $this
+	 */
+	public function setDebug($debug) {
+		$this->debug = $debug;
+		return $this;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getDebugInfo() {
+		return $this->debugInfo;
 	}
 }

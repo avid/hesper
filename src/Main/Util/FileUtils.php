@@ -48,7 +48,7 @@ final class FileUtils extends StaticFactory {
 	}
 
 	public static function makeTempFile($where = 'file-utils/', $prefix = '', $mkdirMode = 0700) {
-		$directory = HESPER_TEMP_PATH . $where;
+		$directory = HESPER_TEMP_PATH . DIRECTORY_SEPARATOR . $where;
 
 		if (!is_writable($directory)) {
 			if (!mkdir($directory, $mkdirMode, true)) {

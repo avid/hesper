@@ -14,7 +14,7 @@ final class TempFile {
 
 	private $path = null;
 
-	public function __construct($directory = 'temp-garbage/', $prefix = 'TmpFile') {
+	public function __construct($directory = '/temp-garbage/', $prefix = 'TmpFile') {
 		$this->path = FileUtils::makeTempFile($directory, $prefix);
 	}
 
