@@ -95,7 +95,7 @@ final class HttpStatus extends Enum {
 		self::CODE_500 => 'Internal Server Error',
 		self::CODE_501 => 'Not Implemented',
 		self::CODE_502 => 'Bad Gateway',
-		self::CODE_503 => 'TranslationService Unavailable',
+		self::CODE_503 => 'Service Unavailable',
 		self::CODE_504 => 'Gateway Time-out',
 		self::CODE_507 => 'Insufficient Storage',
 		self::CODE_510 => 'Not Extended'
