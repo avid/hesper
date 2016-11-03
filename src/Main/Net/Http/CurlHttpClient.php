@@ -276,7 +276,7 @@ final class CurlHttpClient implements HttpClient {
 		$handle = curl_init();
 		Assert::isNotNull($request->getMethod());
 
-		$options = [CURLOPT_WRITEFUNCTION => [$response, 'writeBody'], CURLOPT_HEADERFUNCTION => [$response, 'writeHeader'], CURLOPT_URL => $request->getUrl()->toString(), CURLOPT_USERAGENT => 'onPHP::' . __CLASS__];
+		$options = [CURLOPT_WRITEFUNCTION => [$response, 'writeBody'], CURLOPT_HEADERFUNCTION => [$response, 'writeHeader'], CURLOPT_URL => $request->getUrl()->toString(), CURLOPT_USERAGENT => 'Hesper::' . __CLASS__];
 
 		if ($this->isPhp55()) {
 			$options[CURLOPT_SAFE_UPLOAD] = true;

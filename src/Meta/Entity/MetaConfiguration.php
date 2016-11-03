@@ -862,7 +862,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 			}
 
 			if ($class->getPattern() instanceof InternalClassPattern) {
-				Assert::isTrue($metafile === HESPER_META . 'internal.xml', 'internal classes can be defined only in onPHP, sorry');
+				Assert::isTrue($metafile === HESPER_META . 'internal.xml', 'internal classes can be defined only in Hesper, sorry');
 			} elseif (
 				($class->getPattern() instanceof SpookedClassPattern) ||
 				($class->getPattern() instanceof SpookedEnumerationPattern) ||
