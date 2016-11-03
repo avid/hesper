@@ -23,6 +23,7 @@ use Hesper\Core\Logic\LogicalObject;
 final class SelectQuery extends QuerySkeleton implements Named, JoinCapableQuery, Aliased {
 
 	private $distinct = false;
+	private $distinctFields = [];
 
 	private $name = null;
 
@@ -74,8 +75,12 @@ final class SelectQuery extends QuerySkeleton implements Named, JoinCapableQuery
 	/**
 	 * @return SelectQuery
 	 **/
-	public function distinct() {
+	public function distinct(/* ... */) {
 		$this->distinct = true;
+
+		foreach(func_get_args() as $field) {
+			$this->distinctFields[] = $this->resolveSelectField($field, null, $this->getLastTable());
+		}
 
 		return $this;
 	}
@@ -378,7 +383,21 @@ final class SelectQuery extends QuerySkeleton implements Named, JoinCapableQuery
 			$fieldList[] = $this->toDialectStringField($field, $dialect);
 		}
 
-		$query = 'SELECT ' . ($this->distinct ? 'DISTINCT ' : null) . implode(', ', $fieldList) . $this->joiner->toDialectString($dialect);
+		$query = 'SELECT ';
+		if( $this->distinct ) {
+			$query .= 'DISTINCT ';
+			if( $this->distinctFields ) {
+				$distinctFieldsList = [];
+				foreach( $this->distinctFields as $field ) {
+					$distinctFieldsList[] = $this->toDialectStringField($field, $dialect);
+				}
+				$query .= 'ON (';
+				$query .= implode(', ', $distinctFieldsList);
+				$query .= ') ';
+			}
+		}
+		$query .= implode(', ', $fieldList);
+		$query .= $this->joiner->toDialectString($dialect);
 
 		// WHERE
 		$query .= parent::toDialectString($dialect);
