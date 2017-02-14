@@ -376,21 +376,21 @@ abstract class StorableFile extends IdentifiableObject implements OnBeforeSave, 
         ) {
             $from->rename($oldName, $desiredName);
             $noNeedToUnlink = true;
-            $newName = $desiredName;
         }
         else {
             if ($from === $to && $to->canCopy()) {
-                $newName = $to->copy($oldName, $desiredName);
+                $to->copy($oldName, $desiredName);
             }
             else {
                 if ($from->hasHttpLink() && $to->canReadRemote()) {
-                    $newName = $to->storeRemote( $from->getHttpLink($oldName), $desiredName );
+                    $to->storeRemote( $from->getHttpLink($oldName), $desiredName );
                 }
                 else {
-                    $newName = $to->store( $from->get($oldName), $desiredName );
+                    $to->store( $from->get($oldName), $desiredName );
                 }
             }
         }
+        $newName = basename($desiredName);
 
         if (!$this->createDate) {
             $this->createDate = Timestamp::makeNow();

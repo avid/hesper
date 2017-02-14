@@ -12,6 +12,7 @@ use InvalidArgumentException;
 class StorageEngineLocal extends StorageEngineStreamable {
 
 	protected $canCopy = true;
+	protected $canRename = true;
 
 	public function copy($from, $to = null) {
 		return copy($this->get($from), $this->getPath($to), $this->context);
