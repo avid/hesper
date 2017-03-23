@@ -287,6 +287,13 @@ final class HttpRequest {
 		return $this->{$type->getName()};
 	}
 
+	/**
+	 * @return HttpHeaderCollection|null
+	 */
+	public function getHeaders() {
+		return $this->headers;
+	}
+
 	public function getHeaderList() {
 		return $this->headers->getAll();
 	}
