@@ -163,9 +163,9 @@ final class MySQLim extends Sequenceless {
 			$code = mysqli_errno($this->link);
 
 			if ($code == 1062) {
-				$e = 'DuplicateObjectException';
+				$e = '\\Hesper\Core\Exception\DuplicateObjectException';
 			} else {
-				$e = 'DatabaseException';
+				$e = '\\Hesper\Core\Exception\DatabaseException';
 			}
 
 			throw new $e(mysqli_error($this->link) . ' - ' . $queryString, $code);
