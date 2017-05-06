@@ -9,7 +9,7 @@ function error2Exception($code, $string, $file, $line, $context) {
 error_reporting(E_ALL);
 set_error_handler('error2Exception', E_ALL);
 ignore_user_abort(true);
-define('HESPER_VERSION', '0.1');
+define('HESPER_VERSION', '1.1');
 define('HESPER_ROOT', realpath(dirname(__FILE__)));
 define('HESPER_META', HESPER_ROOT.DIRECTORY_SEPARATOR.'meta'.DIRECTORY_SEPARATOR);
 

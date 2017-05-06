@@ -11,6 +11,7 @@ use Hesper\Meta\Builder\EnumerationClassBuilder;
 use Hesper\Meta\Console\Format;
 use Hesper\Meta\Entity\MetaClass;
 use Hesper\Meta\Entity\MetaConfiguration;
+use Hesper\Meta\Helper\NamespaceUtils;
 
 /**
  * Class EnumerationClassPattern
@@ -30,11 +31,9 @@ class EnumerationClassPattern extends BasePattern {
 	 * @return EnumerationClassPattern
 	 **/
 	public function build(MetaClass $class) {
-		$userFile = $class->getPath() . $class->getName() . EXT_CLASS;
+		$userFile = NamespaceUtils::getBusinessPath($class, false);
 
-		if (MetaConfiguration::me()
-		                     ->isForcedGeneration() || !file_exists($userFile)
-		) {
+		if ( MetaConfiguration::me()->isForcedGeneration() || !file_exists($userFile) ) {
 			$this->dumpFile($userFile, Format::indentize(EnumerationClassBuilder::build($class)));
 		}
 

@@ -85,7 +85,7 @@
 		<properties>
 			<identifier/>
 		</properties>
-		<pattern name="SpookedEnum"/>
+		<pattern name="InternalEnum"/>
 	</class>
 
 	<class name="StorableFile">

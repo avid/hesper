@@ -43,52 +43,14 @@ HELP;
 	
 	function init()
 	{
-		Hesper\Core\Base\Assert::isTrue(defined('PATH_CLASSES'), 'constant PATH_CLASSES must be defined');
+		Hesper\Core\Base\Assert::isTrue(defined('BASE_PATH'), 'constant BASE_PATH must be defined');
 
-		if (!defined('HESPER_META_DAO_DIR'))
-			define(
-				'HESPER_META_DAO_DIR',
-				PATH_CLASSES.'DAO'.DIRECTORY_SEPARATOR
-			);
-		
-		if (!defined('HESPER_META_PROTO_DIR'))
-			define(
-				'HESPER_META_PROTO_DIR',
-				PATH_CLASSES.'Proto'.DIRECTORY_SEPARATOR
-			);
-
-		define('HESPER_META_AUTO_DIR', PATH_CLASSES.'Auto'.DIRECTORY_SEPARATOR);
-		
-		define(
-			'HESPER_META_AUTO_PROTO_DIR',
-			HESPER_META_AUTO_DIR
-			.'Proto'.DIRECTORY_SEPARATOR
-		);
-		
-		if (!defined('HESPER_META_AUTO_DAO_DIR'))
-			define(
-				'HESPER_META_AUTO_DAO_DIR',
-				HESPER_META_AUTO_DIR
-				.'DAO'.DIRECTORY_SEPARATOR
-			);
-		
 		if (!defined('EXT_CLASS'))
 			define('EXT_CLASS','.php');
 
-		if (!is_dir(HESPER_META_DAO_DIR))
-			mkdir(HESPER_META_DAO_DIR, 0755, true);
-		
-		if (!is_dir(HESPER_META_AUTO_DIR))
-			mkdir(HESPER_META_AUTO_DIR, 0755, true);
-			
-		if (!is_dir(HESPER_META_AUTO_PROTO_DIR))
-			mkdir(HESPER_META_AUTO_PROTO_DIR, 0755);
-		
-		if (!is_dir(HESPER_META_AUTO_DAO_DIR))
-			mkdir(HESPER_META_AUTO_DAO_DIR, 0755);
-		
-		if (!is_dir(HESPER_META_PROTO_DIR))
-			mkdir(HESPER_META_PROTO_DIR, 0755, true);
+		if (!defined('SCHEMA_DIR'))
+			define('SCHEMA_DIR',realpath(BASE_PATH.DIRECTORY_SEPARATOR.'misc').DIRECTORY_SEPARATOR);
+
 	}
 	
 	function stop($message = null)
@@ -226,7 +188,7 @@ HELP;
 				setForcedGeneration($metaForce);
 			
 			if ($createPUML) {
-				$pumlFile = HESPER_META_AUTO_DIR.DIRECTORY_SEPARATOR."puml.txt";
+				$pumlFile = SCHEMA_DIR."puml.txt";
 				
 				file_put_contents($pumlFile, $meta->makePUML());
 				

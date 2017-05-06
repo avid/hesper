@@ -11,8 +11,10 @@ use Hesper\Core\Exception\MissingElementException;
 use Hesper\Core\Exception\WrongArgumentException;
 use Hesper\Core\Exception\WrongStateException;
 use Hesper\Main\Criteria\FetchStrategy;
+use Hesper\Meta\Helper\NamespaceUtils;
 use Hesper\Meta\Pattern\GenerationPattern;
 use Hesper\Meta\Pattern\InternalClassPattern;
+use Hesper\Meta\Pattern\InternalCommonPattern;
 use Hesper\Meta\Type\IntegerType;
 
 /**
@@ -22,16 +24,9 @@ use Hesper\Meta\Type\IntegerType;
 class MetaClass {
 
 	private $namespace          = null;
-	private $autoNamespace      = null;
-	private $autoDaoNamespace   = null;
-	private $daoNamespace       = null;
-	private $autoProtoNamespace = null;
-	private $protoNamespace     = null;
 	private $name               = null;
 	private $tableName          = null;
 	private $type               = null;
-	private $path               = null;
-	private $autoPath           = null;
 
 	private $parent = null;
 
@@ -49,19 +44,9 @@ class MetaClass {
 	private $build = true;
 
 	public function __construct($name, $namespace) {
+
 		$this->name = $name;
 		$this->namespace = $namespace;
-
-		$parts = explode('\\', $namespace);
-		$lastPart = end($parts);
-		array_splice($parts, count($parts) - 1);
-		$this->autoNamespace = implode('\\', array_merge($parts, ['Auto', $lastPart]));
-		$this->autoDaoNamespace = implode('\\', array_merge($parts, ['Auto', 'DAO']));
-		$this->autoProtoNamespace = implode('\\', array_merge($parts, ['Auto', 'Proto']));
-		$this->daoNamespace = implode('\\', array_merge($parts, ['DAO']));
-		$this->protoNamespace = implode('\\', array_merge($parts, ['Proto']));
-		$this->path = PATH_CLASSES.$lastPart.DIRECTORY_SEPARATOR;
-		$this->autoPath = HESPER_META_AUTO_DIR.DIRECTORY_SEPARATOR.$lastPart.DIRECTORY_SEPARATOR;
 
 		$dumb = strtolower(preg_replace(':([A-Z]):', '_\1', $name));
 
@@ -80,33 +65,40 @@ class MetaClass {
 		return $this->name;
 	}
 
+	public function getBusinessClass($addBackslash = false) {
+		if( $this->getPattern() instanceof InternalCommonPattern ) {
+			return ($addBackslash ? '\\' : '') . $this->getNamespace().'\\'.$this->getName();
+		}
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getBusinessClass($this, false);;
+	}
+
 	public function getDaoClass($addBackslash = false) {
 		if( !$this->getPattern()->daoExists() ) {
 			throw new WrongStateException($this->getName().' does not support DAO');
 		}
-		return ($addBackslash ? '\\' : '') . $this->daoNamespace . '\\' . $this->name . 'DAO';
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getDAOClass($this, false);
 	}
 
 	public function getProtoClass($addBackslash = false) {
-		return ($addBackslash ? '\\' : '') . $this->protoNamespace . '\Proto' . $this->name;
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getProtoClass($this, false);
 	}
 
 	public function getAutoBusinessClass($addBackslash = false) {
-		if($this->getPattern() instanceof InternalClassPattern) {
+		if($this->getPattern() instanceof InternalCommonPattern) {
 			throw new WrongStateException($this->getName().' does not have Auto class');
 		}
-		return ($addBackslash ? '\\' : '') . $this->autoNamespace . '\Auto' . $this->name;
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getBusinessClass($this, true);
 	}
 
 	public function getAutoDaoClass($addBackslash = false) {
 		if( !$this->getPattern()->daoExists() ) {
 			throw new WrongStateException($this->getName().' does not support DAO');
 		}
-		return ($addBackslash ? '\\' : '') . $this->autoDaoNamespace . '\Auto' . $this->name . 'DAO';
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getDAOClass($this, true);
 	}
 
 	public function getAutoProtoClass($addBackslash = false) {
-		return ($addBackslash ? '\\' : '') . $this->autoProtoNamespace . '\AutoProto' . $this->name;
+		return ($addBackslash ? '\\' : '') . NamespaceUtils::getProtoClass($this, true);
 	}
 
 	public function getTableName() {
@@ -170,7 +162,7 @@ class MetaClass {
 	}
 
 	public function hasBuildableParent() {
-		return ($this->parent && (!$this->getParent()->getPattern() instanceof InternalClassPattern));
+		return ($this->parent && (!$this->getParent()->getPattern() instanceof InternalCommonPattern));
 	}
 
 	/**
@@ -197,7 +189,7 @@ class MetaClass {
 			$class = $this;
 
 			while ($parent = $class->getParent()) {
-				if ($parent->getPattern() instanceof InternalClassPattern) {
+				if ($parent->getPattern() instanceof InternalCommonPattern) {
 					$out = array_merge($parent->getProperties(), $out);
 				}
 
@@ -425,24 +417,15 @@ class MetaClass {
 	/**
 	 * @return null|string
 	 */
+	public function getClassNamespace() {
+		return NamespaceUtils::getBusinessNS($this);
+	}
+
+	/**
+	 * @return null|string
+	 */
 	public function getAutoNamespace() {
-		return $this->autoNamespace;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getAutoDaoNamespace()
-	{
-		return $this->autoDaoNamespace;
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function getAutoProtoNamespace()
-	{
-		return $this->autoProtoNamespace;
+		return NamespaceUtils::getBusinessNS($this, true);
 	}
 
 	/**
@@ -450,7 +433,15 @@ class MetaClass {
 	 */
 	public function getDaoNamespace()
 	{
-		return $this->daoNamespace;
+		return NamespaceUtils::getDAONS($this);
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getAutoDaoNamespace()
+	{
+		return NamespaceUtils::getDAONS($this, true);
 	}
 
 	/**
@@ -458,22 +449,15 @@ class MetaClass {
 	 */
 	public function getProtoNamespace()
 	{
-		return $this->protoNamespace;
+		return NamespaceUtils::getProtoNS($this);
 	}
 
 	/**
 	 * @return null|string
 	 */
-	public function getPath()
+	public function getAutoProtoNamespace()
 	{
-		return $this->path;
+		return NamespaceUtils::getProtoNS($this, true);
 	}
 
-	/**
-	 * @return null|string
-	 */
-	public function getAutoPath()
-	{
-		return $this->autoPath;
-	}
 }

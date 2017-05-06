@@ -3,17 +3,21 @@
  * @project    Hesper Framework
  * @author     Alex Gorbylev
  * @originally onPHP Framework
- * @originator Konstantin V. Arkhipov
  */
 namespace Hesper\Meta\Pattern;
 
 /**
- * Class InternalClassPattern
+ * Class InternalEnumPattern
  * @package Hesper\Meta\Pattern
  */
-final class InternalClassPattern extends InternalCommonPattern implements GenerationPattern {
+final class InternalEnumPattern extends InternalCommonPattern {
 
 	public function daoExists() {
-		return true;
+		return false;
 	}
+
+	public function tableExists() {
+		return false;
+	}
+
 }

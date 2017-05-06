@@ -36,6 +36,7 @@ use Hesper\Meta\Builder\ContainerClassBuilder;
 use Hesper\Meta\Builder\SchemaBuilder;
 use Hesper\Meta\Console\Format;
 use Hesper\Meta\Console\MetaOutput;
+use Hesper\Meta\Helper\NamespaceUtils;
 use Hesper\Meta\Pattern\AbstractClassPattern;
 use Hesper\Meta\Pattern\BasePattern;
 use Hesper\Meta\Pattern\DictionaryClassPattern;
@@ -43,6 +44,7 @@ use Hesper\Meta\Pattern\EnumClassPattern;
 use Hesper\Meta\Pattern\EnumerationClassPattern;
 use Hesper\Meta\Pattern\GenerationPattern;
 use Hesper\Meta\Pattern\InternalClassPattern;
+use Hesper\Meta\Pattern\InternalCommonPattern;
 use Hesper\Meta\Pattern\RegistryClassPattern;
 use Hesper\Meta\Pattern\SpookedClassPattern;
 use Hesper\Meta\Pattern\SpookedEnumerationPattern;
@@ -61,6 +63,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	/** @var MetaClass[] */
 	private $classes = [];
 	private $sources = [];
+	private $namespaces = [];
 
 	private $liaisons   = [];
 	private $references = [];
@@ -84,6 +87,14 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	 **/
 	public static function out() {
 		return self::me()->getOutput();
+	}
+
+	public function __construct() {
+		$this->namespaces['Hesper\Main\Base'] = [
+			'path' => realpath( __DIR__.DIRECTORY_SEPARATOR.'../../Main/Base' ),
+			'build' => false,
+			'classes' => [],
+		];
 	}
 
 	/**
@@ -158,7 +169,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		foreach ($this->references as $className => $list) {
 			$class = $this->getClassByName($className);
 
-			if (($class->getPattern() instanceof ValueObjectPattern) || ($class->getPattern() instanceof InternalClassPattern) || ($class->getPattern() instanceof AbstractClassPattern)) {
+			if (($class->getPattern() instanceof ValueObjectPattern) || ($class->getPattern() instanceof InternalCommonPattern) || ($class->getPattern() instanceof AbstractClassPattern)) {
 				continue;
 			}
 
@@ -168,7 +179,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 					foreach ($this->references[$refer] as $holder) {
 						$this->classes[$className]->setReferencingClass($holder);
 					}
-				} elseif ((!$remote->getPattern() instanceof AbstractClassPattern) && (!$remote->getPattern() instanceof InternalClassPattern) && ($remote->getTypeId() <> MetaClassType::CLASS_ABSTRACT)) {
+				} elseif ((!$remote->getPattern() instanceof AbstractClassPattern) && (!$remote->getPattern() instanceof InternalCommonPattern) && ($remote->getTypeId() <> MetaClassType::CLASS_ABSTRACT)) {
 					$this->classes[$className]->setReferencingClass($refer);
 				}
 			}
@@ -212,7 +223,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		$out->infoLine('Building classes:');
 
 		foreach ($this->classes as $name => $class) {
-			if (!$class->doBuild() || ($class->getPattern() instanceof InternalClassPattern)) {
+			if (!$class->doBuild() || ($class->getPattern() instanceof InternalCommonPattern)) {
 				continue;
 			} else {
 				$out->infoLine("\t" . $name . ':');
@@ -264,7 +275,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 
 		$schema .= '?>';
 
-		BasePattern::dumpFile(HESPER_META_AUTO_DIR . 'schema.php', Format::indentize($schema));
+		BasePattern::dumpFile(SCHEMA_DIR . 'schema.php', Format::indentize($schema));
 
 		return $this;
 	}
@@ -276,7 +287,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		$out = $this->getOutput();
 		$out->newLine()->infoLine('Suggested DB-schema changes: ');
 
-		require HESPER_META_AUTO_DIR . 'schema.php';
+		require SCHEMA_DIR . 'schema.php';
 
 		foreach ($this->classes as $class) {
 			if (
@@ -342,17 +353,13 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		foreach ($this->classes as $class) {
 			foreach ($class->getProperties() as $property) {
 				if ($property->getRelation() && ($property->getRelationId() != MetaRelation::ONE_TO_ONE)) {
-					$userFile = HESPER_META_DAO_DIR . $class->getName() . ucfirst($property->getName()) . 'DAO' . EXT_CLASS;
+					$relation = $class->getName() . ucfirst($property->getName()) . 'DAO';
+					$userFile = NamespaceUtils::getDAODir($class) . DIRECTORY_SEPARATOR . $relation . EXT_CLASS;
 
 					if ($force || !file_exists($userFile)) {
 						BasePattern::dumpFile($userFile, Format::indentize(ContainerClassBuilder::buildContainer($class, $property)));
-					}
-
-					// check for old-style naming
-					$oldStlye = HESPER_META_DAO_DIR . $class->getName() . 'To' . $property->getType()->getClassName() . 'DAO' . EXT_CLASS;
-
-					if (is_readable($oldStlye)) {
-						$out->newLine()->error('remove manually: ' . $oldStlye);
+					} else {
+						$out->infoLine("\t\t" . $relation . ' (exists)', true);
 					}
 				}
 			}
@@ -378,7 +385,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 					$class->getPattern() instanceof SpookedEnumerationPattern ||
 					$class->getPattern() instanceof SpookedEnumPattern ||
 					$class->getPattern() instanceof SpookedRegistryPattern ||
-					$class->getPattern() instanceof InternalClassPattern
+					$class->getPattern() instanceof InternalCommonPattern
 				) &&
 				(class_exists(MetaClassNameBuilder::getClassOfMetaClass($class, true)))
 			) {
@@ -544,16 +551,42 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	public function checkForStaleFiles($drop = false) {
 		$this->getOutput()->newLine()->infoLine('Checking for stale files: ');
 
-		$dirs = scandir(HESPER_META_AUTO_DIR);
-		if (is_array($dirs)) {
-			foreach ($dirs as $dir) {
-				if (is_dir(HESPER_META_AUTO_DIR.$dir) && ($dir != '.' && $dir != '..')) {
-					$this->checkDirectory(HESPER_META_AUTO_DIR.$dir, 'Auto', null, $drop);
+		foreach( $this->namespaces as $name=>$info ) {
+			if( $info['build']==false ) {
+				continue;
+			}
+			$basepath = $info['path'];
+			$path = $basepath.DIRECTORY_SEPARATOR.'Auto'.DIRECTORY_SEPARATOR;
+			if( !is_dir($path) ) {
+				continue;
+			}
+
+			$dirs = scandir($path);
+			if (is_array($dirs)) {
+				foreach ($dirs as $dir) {
+					if (!is_dir($path.$dir) || $dir == '.' || $dir == '..') {
+						continue;
+					}
+					switch($dir) {
+						case 'Business': {
+							$this->checkDirectory($path.$dir, 'Auto', null, $drop);
+						} break;
+						case 'DAO': {
+							$this->checkDirectory($path.$dir, 'Auto', 'DAO', $drop);
+						} break;
+						case 'Proto': {
+							$this->checkDirectory($path.$dir, 'AutoProto', null, $drop);
+						} break;
+						default: {
+							$this->getOutput()->warning("\t" . $path.$dir);
+						}
+					}
 				}
 			}
+
 		}
 
-		return $this->checkDirectory(HESPER_META_AUTO_DAO_DIR, 'Auto', 'DAO', $drop)->checkDirectory(HESPER_META_AUTO_PROTO_DIR, 'AutoProto', null, $drop);
+		return $this;
 	}
 
 	/**
@@ -570,6 +603,10 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 
 	public function getClassList() {
 		return $this->classes;
+	}
+
+	public function getNamespaceList() {
+		return $this->namespaces;
 	}
 
 	/**
@@ -650,8 +687,32 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	}
 
 	/**
-	 * @return MetaClassProperty
+	 * @return MetaConfiguration
 	 **/
+	private function addNamespace(\SimpleXMLElement $source) {
+		$name = (string)$source['name'];
+		$path = (string)$source['path'];
+
+		Assert::isFalse(isset($this->namespaces[$name]), "duplicate namespace - '{$name}'");
+
+		$this->namespaces[$name] = [
+			'path' => realpath( BASE_PATH.$path ),
+			'build' => true,
+			'classes' => [],
+		];
+
+		return $this;
+	}
+
+	/**
+	 * @param string    $name
+	 * @param string    $type
+	 * @param MetaClass $class
+	 * @param string    $size
+	 *
+	 * @return MetaClassProperty
+	 * @throws WrongArgumentException
+	 */
 	private function makeProperty($name, $type, MetaClass $class, $size) {
 		Assert::isFalse(strpos($name, '_'), 'naming convention violation spotted');
 
@@ -699,7 +760,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	 * @return MetaConfiguration
 	 **/
 	private function checkSanity(MetaClass $class) {
-		if ((!$class->getParent() || ($class->getFinalParent()->getPattern() instanceof InternalClassPattern)) && (!$class->getPattern() instanceof ValueObjectPattern) && (!$class->getPattern() instanceof InternalClassPattern)) {
+		if ((!$class->getParent() || ($class->getFinalParent()->getPattern() instanceof InternalCommonPattern)) && (!$class->getPattern() instanceof ValueObjectPattern) && (!$class->getPattern() instanceof InternalCommonPattern)) {
 			Assert::isTrue($class->getIdentifier() !== null, 'only value objects can live without identifiers. ' . 'do not use them anyway (' . $class->getName() . ')');
 		}
 
@@ -777,17 +838,30 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 	}
 
 	/**
+	 * @param \SimpleXMLElement $xml
+	 * @param string            $metafile
+	 * @param boolean           $generate
+	 *
 	 * @return MetaConfiguration
-	 **/
+	 * @throws MissingElementException
+	 * @throws UnimplementedFeatureException
+	 * @throws WrongArgumentException
+	 * @throws WrongStateException
+	 */
 	private function processClasses(\SimpleXMLElement $xml, $metafile, $generate) {
 		$attrs = $xml->classes->attributes();
 		if (!isset($attrs['namespace'])) {
 			throw new WrongStateException('Element classes should contain a `namespace` attribute');
 		}
 		$namespace = strval($attrs['namespace']);
+		NamespaceUtils::checkNS($namespace);
+		if( !isset($this->namespaces[$namespace]) ) {
+			throw new WrongStateException("Unknown namespace `{$namespace}` in class list");
+		}
 
 		foreach ($xml->classes[0] as $xmlClass) {
 			$name = (string)$xmlClass['name'];
+			$this->namespaces[$namespace]['classes'][] = $name;
 
 			Assert::isFalse(isset($this->classes[$name]), 'class name collision found for ' . $name);
 
@@ -861,7 +935,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 				$class->setFetchStrategy(FetchStrategy::cascade());
 			}
 
-			if ($class->getPattern() instanceof InternalClassPattern) {
+			if ($class->getPattern() instanceof InternalCommonPattern) {
 				Assert::isTrue($metafile === HESPER_META . 'internal.xml', 'internal classes can be defined only in Hesper, sorry');
 			} elseif (
 				($class->getPattern() instanceof SpookedClassPattern) ||
@@ -964,6 +1038,12 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 			}
 		}
 
+		// populate namespaces (if any)
+		if (isset($xml->namespaces[0])) {
+			foreach ($xml->namespaces[0] as $namespace) {
+				$this->addNamespace($namespace);
+			}
+		}
 		if (isset($xml->include['file'])) {
 			$this->processIncludes($xml, $metafile);
 		}

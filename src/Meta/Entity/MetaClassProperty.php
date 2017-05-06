@@ -15,7 +15,8 @@ use Hesper\Main\Criteria\FetchStrategy;
 use Hesper\Meta\Pattern\DictionaryClassPattern;
 use Hesper\Meta\Pattern\EnumClassPattern;
 use Hesper\Meta\Pattern\EnumerationClassPattern;
-use Hesper\Meta\Pattern\InternalClassPattern;
+use Hesper\Meta\Pattern\InternalCommonPattern;
+use Hesper\Meta\Pattern\InternalEnumPattern;
 use Hesper\Meta\Pattern\RegistryClassPattern;
 use Hesper\Meta\Pattern\StraightMappingPattern;
 use Hesper\Meta\Pattern\ValueObjectPattern;
@@ -301,7 +302,7 @@ class MetaClassProperty {
 			if ($pattern instanceof EnumerationClassPattern) {
 				$primitiveName = 'enumeration';
 				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
-			} elseif ($pattern instanceof EnumClassPattern) {
+			} elseif ($pattern instanceof EnumClassPattern || $pattern instanceof InternalEnumPattern) {
 				$primitiveName = 'enum';
 				$businessClassName = MetaClassNameBuilder::getClassOfMetaProperty($this, true);
 			} elseif ($pattern instanceof RegistryClassPattern) {
@@ -337,11 +338,11 @@ class MetaClassProperty {
 				$class = $this->getType()->getClass();
 				$pattern = $class->getPattern();
 
-				if ($pattern instanceof InternalClassPattern) {
+				if ($pattern instanceof InternalCommonPattern) {
 					$className = $holder->getName();
 				}
 
-				if ((($pattern instanceof InternalClassPattern) || ($pattern instanceof ValueObjectPattern)) && ($className <> $holder->getName())) {
+				if ((($pattern instanceof InternalCommonPattern) || ($pattern instanceof ValueObjectPattern)) && ($className <> $holder->getName())) {
 					$inner = true;
 				}
 			}

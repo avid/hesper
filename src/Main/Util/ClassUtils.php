@@ -183,12 +183,11 @@ final class ClassUtils extends StaticFactory {
 
 	/* void */
 	public static function preloadAllClasses() {
-		if( !defined('PATH_CLASSES') ) {
-			throw new WrongStateException('PATH_CLASSES is not defined');
+		if( !defined('BASE_PATH') ) {
+			throw new WrongStateException('BASE_PATH is not defined');
 		}
 
-
-		foreach (glob(PATH_CLASSES . DIRECTORY_SEPARATOR . '/*' . EXT_CLASS, GLOB_NOSORT) as $file) {
+		foreach (glob(BASE_PATH . DIRECTORY_SEPARATOR . '/*' . EXT_CLASS, GLOB_NOSORT) as $file) {
 			$className = basename($file, EXT_CLASS);
 
 			if (!class_exists($className) && !interface_exists($className) && !(function_exists('trait_exists') && trait_exists($className))) {

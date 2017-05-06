@@ -1,6 +1,6 @@
 <!-- $Id$ -->
 
-<!ELEMENT metaconfiguration (include*, classes*, sources*)>
+<!ELEMENT metaconfiguration (include*, classes*, sources*, namespaces*)>
 
 <!ELEMENT classes (class*)>
 <!ATTLIST classes
@@ -55,8 +55,10 @@
 			|SpookedClass
 			|SpookedEnumeration
 			|SpookedEnum
+			|SpookedRegistry
 			|ValueObject
 			|InternalClass
+			|InternalEnum
 		) #REQUIRED
 		fetch		(lazy|cascade) #IMPLIED
 >
@@ -67,6 +69,14 @@
 <!ATTLIST source
 		name	CDATA #REQUIRED
 		default	(true|false) "false"
+>
+
+<!ELEMENT namespaces (namespace+)>
+
+<!ELEMENT namespace EMPTY>
+<!ATTLIST namespace
+		name		CDATA #REQUIRED
+		path		CDATA #REQUIRED
 >
 
 <!-- file path is relative to current meta's directory -->

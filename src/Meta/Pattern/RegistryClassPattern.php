@@ -10,6 +10,7 @@ use Hesper\Meta\Entity\MetaClass;
 use Hesper\Meta\Entity\MetaConfiguration;
 use Hesper\Meta\Console\Format;
 use Hesper\Meta\Builder\RegistryClassBuilder;
+use Hesper\Meta\Helper\NamespaceUtils;
 
 /**
  * @ingroup Patterns
@@ -28,16 +29,11 @@ class RegistryClassPattern extends BasePattern {
      * @return RegistryClassPattern
      **/
     public function build(MetaClass $class) {
-        $userFile = $class->getPath() . $class->getName() . EXT_CLASS;
+	    $userFile = NamespaceUtils::getBusinessPath($class, false);
 
-        if (
-            MetaConfiguration::me()->isForcedGeneration()
-            || !file_exists($userFile)
-        )
-            $this->dumpFile(
-                $userFile,
-                Format::indentize(RegistryClassBuilder::build($class))
-            );
+        if ( MetaConfiguration::me()->isForcedGeneration() || !file_exists($userFile) ) {
+            $this->dumpFile($userFile, Format::indentize(RegistryClassBuilder::build($class)));
+        }
 
         return $this;
     }

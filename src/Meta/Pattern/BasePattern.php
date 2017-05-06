@@ -17,6 +17,7 @@ use Hesper\Meta\Builder\ProtoClassBuilder;
 use Hesper\Meta\Console\Format;
 use Hesper\Meta\Entity\MetaClass;
 use Hesper\Meta\Entity\MetaConfiguration;
+use Hesper\Meta\Helper\NamespaceUtils;
 
 /**
  * Class BasePattern
@@ -57,9 +58,7 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 		if ($old !== $new) {
 			$out->warning("\t\t" . $className . ' ');
 
-			if (!MetaConfiguration::me()
-			                      ->isDryRun()
-			) {
+			if ( !MetaConfiguration::me()->isDryRun() ) {
 				$fp = fopen($path, 'wb');
 				fwrite($fp, $content);
 				fclose($fp);
@@ -90,13 +89,11 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	 * @return BasePattern
 	 **/
 	protected function buildProto(MetaClass $class) {
-		$this->dumpFile(HESPER_META_AUTO_PROTO_DIR . 'AutoProto' . $class->getName() . EXT_CLASS, Format::indentize(AutoProtoClassBuilder::build($class)));
+		$autoFile = NamespaceUtils::getProtoPath($class, true);
+		$this->dumpFile($autoFile, Format::indentize(AutoProtoClassBuilder::build($class)));
 
-		$userFile = HESPER_META_PROTO_DIR . 'Proto' . $class->getName() . EXT_CLASS;
-
-		if (MetaConfiguration::me()
-		                     ->isForcedGeneration() || !file_exists($userFile)
-		) {
+		$userFile = NamespaceUtils::getProtoPath($class, false);
+		if ( MetaConfiguration::me()->isForcedGeneration() || !file_exists($userFile) ) {
 			$this->dumpFile($userFile, Format::indentize(ProtoClassBuilder::build($class)));
 		}
 
@@ -107,13 +104,11 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	 * @return BasePattern
 	 **/
 	protected function buildBusiness(MetaClass $class) {
-		$this->dumpFile($class->getAutoPath() . 'Auto' . $class->getName() . EXT_CLASS, Format::indentize(AutoClassBuilder::build($class)));
+		$autoFile = NamespaceUtils::getBusinessPath($class, true);
+		$this->dumpFile($autoFile, Format::indentize(AutoClassBuilder::build($class)));
 
-		$userFile = $class->getPath() . $class->getName() . EXT_CLASS;
-
-		if (MetaConfiguration::me()
-		                     ->isForcedGeneration() || !file_exists($userFile)
-		) {
+		$userFile = NamespaceUtils::getBusinessPath($class, false);
+		if ( MetaConfiguration::me()->isForcedGeneration() || !file_exists($userFile) ) {
 			$this->dumpFile($userFile, Format::indentize(BusinessClassBuilder::build($class)));
 		}
 
@@ -124,13 +119,11 @@ abstract class BasePattern extends Singleton implements GenerationPattern {
 	 * @return BasePattern
 	 **/
 	protected function buildDao(MetaClass $class) {
-		$this->dumpFile(HESPER_META_AUTO_DAO_DIR . 'Auto' . $class->getName() . 'DAO' . EXT_CLASS, Format::indentize(AutoDaoBuilder::build($class)));
+		$autoFile = NamespaceUtils::getDAOPath($class, true);
+		$this->dumpFile($autoFile, Format::indentize(AutoDaoBuilder::build($class)));
 
-		$userFile = HESPER_META_DAO_DIR . $class->getName() . 'DAO' . EXT_CLASS;
-
-		if (MetaConfiguration::me()
-		                     ->isForcedGeneration() || !file_exists($userFile)
-		) {
+		$userFile = NamespaceUtils::getDAOPath($class, false);
+		if ( MetaConfiguration::me()->isForcedGeneration() || !file_exists($userFile) ) {
 			$this->dumpFile($userFile, Format::indentize(DaoBuilder::build($class)));
 		}
 
