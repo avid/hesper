@@ -39,7 +39,7 @@ final class DataType extends Enum implements DialectString {
 	const JSON      		= 0x000033;
 	const JSONB      		= 0x000034;
 
-	const DATE        = 0x000A0B;
+	const DATE        = 0x00000D;
 	const TIME        = 0x000A0C;
 	const TIMESTAMP   = 0x000A0D;
 	const TIMESTAMPTZ = 0x000A0E;

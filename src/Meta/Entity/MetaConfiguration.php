@@ -15,7 +15,6 @@ use Hesper\Core\Base\Prototyped;
 use Hesper\Core\Base\Registry;
 use Hesper\Core\Base\Singleton;
 use Hesper\Core\DB\DBPool;
-use Hesper\Core\DB\PostgresDialect;
 use Hesper\Core\Exception\BaseException;
 use Hesper\Core\Exception\MissingElementException;
 use Hesper\Core\Exception\ObjectNotFoundException;
@@ -555,35 +554,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 			if( $info['build']==false ) {
 				continue;
 			}
-			$basepath = $info['path'];
-			$path = $basepath.DIRECTORY_SEPARATOR.'Auto'.DIRECTORY_SEPARATOR;
-			if( !is_dir($path) ) {
-				continue;
-			}
-
-			$dirs = scandir($path);
-			if (is_array($dirs)) {
-				foreach ($dirs as $dir) {
-					if (!is_dir($path.$dir) || $dir == '.' || $dir == '..') {
-						continue;
-					}
-					switch($dir) {
-						case 'Business': {
-							$this->checkDirectory($path.$dir, 'Auto', null, $drop);
-						} break;
-						case 'DAO': {
-							$this->checkDirectory($path.$dir, 'Auto', 'DAO', $drop);
-						} break;
-						case 'Proto': {
-							$this->checkDirectory($path.$dir, 'AutoProto', null, $drop);
-						} break;
-						default: {
-							$this->getOutput()->warning("\t" . $path.$dir);
-						}
-					}
-				}
-			}
-
+			$this->checkPathStales($info['classes'], $info['path'], false, $drop);
 		}
 
 		return $this;
@@ -637,19 +608,66 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		return $out . "@enduml\n";
 	}
 
+	private function checkPathStales(array $classes ,$path, $auto = false, $drop = false) {
+		if( !is_dir($path) ) {
+			return;
+		}
+		$path .= DIRECTORY_SEPARATOR;
+
+		$list = scandir($path);
+		if (is_array($list)) {
+			foreach ($list as $item) {
+				if ( $item{0} == '.' ) {
+					continue;
+				}
+
+				if ( !is_dir($path.$item) ) {
+					continue;
+				}
+
+				switch($item) {
+					case 'Auto': {
+						$this->checkPathStales($classes, $path.$item, true, $drop);
+					} break;
+					case 'Business': {
+						$this->checkDirectory($classes, $path.$item, ($auto?'Auto':''), null, $drop, $auto);
+					} break;
+					case 'DAO': {
+						$this->checkDirectory($classes, $path.$item, ($auto?'Auto':''), 'DAO', $drop, $auto);
+					} break;
+					case 'Proto': {
+						$this->checkDirectory($classes, $path.$item, ($auto?'AutoProto':'Proto'), null, $drop, $auto);
+					} break;
+					default: {
+						if( $auto ) {
+							$this->getOutput()->warning("\t" . $path.$item);
+						}
+					}
+				}
+			}
+		}
+
+	}
+
 	/**
 	 * @return MetaConfiguration
 	 **/
-	private function checkDirectory($directory, $preStrip, $postStrip, $drop = false) {
+	private function checkDirectory(array $classes, $directory, $preStrip, $postStrip, $drop = false, $strict = false) {
 		$out = $this->getOutput();
 
-		foreach (glob($directory . '*.php', GLOB_NOSORT) as $filename) {
+		foreach (glob($directory . DIRECTORY_SEPARATOR . '*.php', GLOB_NOSORT) as $filename) {
 			$name = substr(basename($filename, $postStrip . EXT_CLASS), strlen($preStrip));
 
-			if (!isset($this->classes[$name])) {
-				$out->warning("\t" . str_replace(getcwd() . DIRECTORY_SEPARATOR, null, $filename));
+			if (!in_array($name, $classes)) {
+				$text = "\t" . str_replace(getcwd() . DIRECTORY_SEPARATOR, null, $filename);
+				if( $strict ) {
+					$out->warning($text);
+				} else {
+					$out->remark($text);
+				}
 
-				if ($drop) {
+
+				if ($strict && $drop) {
 					try {
 						unlink($filename);
 						$out->infoLine(' removed.');
@@ -693,10 +711,51 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		$name = (string)$source['name'];
 		$path = (string)$source['path'];
 
+		$this->putNamesapce($name, BASE_PATH.$path);
+
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return MetaConfiguration
+	 * @throws WrongStateException
+	 */
+	private function guessNamespace($name) {
+		$nsparts = explode('\\', $name);
+
+		$dirparts = [];
+		$path = null;
+		while( count($nsparts) > 0 ) {
+			$check = implode('\\', $nsparts);
+			if( isset($this->namespaces[$check]) ) {
+				$path = $this->namespaces[$check]['path'];
+				break;
+			} else {
+				$dirparts[] = array_pop($nsparts);
+			}
+		}
+
+		if( is_null($path) ) {
+			throw new WrongStateException("Unknown namespace `{$name}`, can not guess path");
+		}
+
+		array_unshift($dirparts, $path);
+
+		$this->putNamesapce($name, implode(DIRECTORY_SEPARATOR, $dirparts));
+
+		return $this;
+	}
+
+	/**
+	 * @return MetaConfiguration
+	 **/
+	private function putNamesapce($name, $path) {
 		Assert::isFalse(isset($this->namespaces[$name]), "duplicate namespace - '{$name}'");
 
 		$this->namespaces[$name] = [
-			'path' => realpath( BASE_PATH.$path ),
+			'path' => str_replace('/./', '/', $path),
 			'build' => true,
 			'classes' => [],
 		];
@@ -856,7 +915,7 @@ final class MetaConfiguration extends Singleton implements Instantiatable {
 		$namespace = strval($attrs['namespace']);
 		NamespaceUtils::checkNS($namespace);
 		if( !isset($this->namespaces[$namespace]) ) {
-			throw new WrongStateException("Unknown namespace `{$namespace}` in class list");
+			$this->guessNamespace($namespace);
 		}
 
 		foreach ($xml->classes[0] as $xmlClass) {

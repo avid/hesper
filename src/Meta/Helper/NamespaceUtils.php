@@ -107,32 +107,17 @@ class NamespaceUtils {
 	private static function getDir($namespace, $type, $auto) {
 		$spaces = MetaConfiguration::me()->getNamespaceList();
 
-		$nsparts = explode('\\', $namespace);
+		if( !isset($spaces[$namespace]) ) {
+			throw new MissingElementException("knows nothing about '{$namespace}' namespace");
+		}
+
+		$nsparts = [$spaces[$namespace]['path']];
 		if( $auto ) {
 			$nsparts[] = 'Auto';
 		}
 		$nsparts[] = $type;
 
-		$dirparts = [];
-		$path = null;
-		while( count($nsparts) > 0 ) {
-			$check = implode('\\', $nsparts);
-			if( isset($spaces[$check]) ) {
-				$path = $spaces[$check]['path'];
-				break;
-			} else {
-				$dirparts[] = array_pop($nsparts);
-			}
-		}
-
-		if( $path==null ) {
-			throw new MissingElementException("knows nothing about '{$namespace}' namespace");
-		}
-		if( count($dirparts) > 0 ) {
-			$path .= DIRECTORY_SEPARATOR.implode('/', array_reverse($dirparts));
-		}
-
-		return $path;
+		return implode(DIRECTORY_SEPARATOR, $nsparts);
 	}
 
 }

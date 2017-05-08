@@ -50,7 +50,6 @@ class MetaClassNameBuilder extends StaticFactory {
 			if( $type->getClassName(){0}=='\\' ) {
 				$className = $type->getClassName();
 			} else {
-//				$className .= NamespaceUtils::getBusinessNS($property->getClass()) . '\\' . $type->getClassName();
 				$className .= self::guessFullClass($property->getClass(), $type->getClassName());
 			}
 		}
