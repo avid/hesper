@@ -7,6 +7,7 @@
 namespace Hesper\Meta\Builder;
 
 use Hesper\Meta\Entity\MetaClass;
+use Hesper\Meta\Helper\NamespaceUtils;
 
 /**
  * @ingroup Builders
@@ -15,8 +16,9 @@ final class RegistryClassBuilder extends OnceBuilder {
     public static function build(MetaClass $class) {
         $out = self::getHead();
 
+	    $nameSpace = NamespaceUtils::getBusinessNS($class);
         $out .= <<<EOT
-namespace {$class->getNamespace()};
+namespace {$nameSpace};
 
 use Hesper\Core\Base\Registry;
 
