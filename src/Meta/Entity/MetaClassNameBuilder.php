@@ -85,9 +85,9 @@ class MetaClassNameBuilder extends StaticFactory {
 		if( in_array($targetClassName, $nearest['classes']) ) {
 			return $source->getNamespace() . ($nearest['build']?'\\'.'Business':'') . '\\' . $targetClassName;
 		}
-		foreach( $nsmap as $ns=>$info ) {
+		foreach( $nsmap as $namespace=>$info ) {
 			if( in_array($targetClassName, $info['classes']) ) {
-				return $source->getNamespace() . ($info['build']?'\\'.'Business':'') . '\\' . $targetClassName;
+				return $namespace . ($info['build']?'\\'.'Business':'') . '\\' . $targetClassName;
 			}
 		}
 		throw new MissingElementException("class `{$targetClassName}` was not found in any namespace");

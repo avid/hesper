@@ -12,6 +12,7 @@ use Hesper\Core\Base\Singleton;
 use Hesper\Main\DAO\DAOConnected;
 use Hesper\Meta\Entity\MetaClass;
 use Hesper\Meta\Entity\MetaClassType;
+use Hesper\Meta\Helper\NamespaceUtils;
 use Hesper\Meta\Pattern\AbstractClassPattern;
 use Hesper\Meta\Pattern\InternalClassPattern;
 
@@ -59,8 +60,9 @@ EOT;
 			$dao = null;
 		}
 
+		$nameSpace = NamespaceUtils::getBusinessNS($class);
 		$out .= <<<EOT
-namespace {$class->getNamespace()};
+namespace {$nameSpace};
 
 
 EOT;

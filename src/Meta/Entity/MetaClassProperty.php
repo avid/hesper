@@ -257,8 +257,10 @@ class MetaClassProperty {
 
 			$prefix = $this->getType() instanceof InternalType ? $this->getColumnName() . '_' : null;
 
+			/** @var MetaClass $remote */
 			$remote = $this->getType()->getClass();
 
+			/** @var MetaClassProperty $property */
 			foreach ($remote->getAllProperties() as $property) {
 				$columns[] = $property->buildColumn($prefix . $property->getRelationColumnName());
 			}
