@@ -68,6 +68,12 @@ class Date implements Stringable, DialectString {
 		return $date->modify("+{$days} day");
 	}
 
+	public static function makeFromFormat($format, $string) {
+		$dateTime = \DateTime::createFromFormat($format,$string);
+
+		return new static($dateTime);
+	}
+
 	public static function dayDifference(Date $left, Date $right) {
 		return gregoriantojd($right->getMonth(), $right->getDay(), $right->getYear()) - gregoriantojd($left->getMonth(), $left->getDay(), $left->getYear());
 	}
@@ -234,8 +240,9 @@ class Date implements Stringable, DialectString {
 				}
 
 				$this->dateTime = new \DateTime($date);
+			} elseif ($date instanceof \DateTime) {
+				$this->dateTime = clone $date;
 			}
-
 		} catch (\Exception $e) {
 			throw new WrongArgumentException("strange input given - '{$date}'");
 		}
