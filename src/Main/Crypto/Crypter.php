@@ -7,7 +7,7 @@
  */
 namespace Hesper\Main\Crypto;
 
-use Hesper\Core\Exception\WrongStateException;
+use Hesper\Core\Exception\UnsupportedMethodException;
 
 /**
  * Class Crypter
@@ -15,42 +15,36 @@ use Hesper\Core\Exception\WrongStateException;
  */
 final class Crypter {
 
-	private $crResource = null;
-	private $keySize    = null;
+	private $algorithm  = null;
 	private $iv         = null;
 
-	public static function create($algorithm, $mode) {
-		return new self($algorithm, $mode);
+	public static function create($algorithm, $vector) {
+		return new self($algorithm, $vector);
 	}
 
-	public function  __construct($algorithm, $mode) {
-		if (!$this->crResource = mcrypt_module_open($algorithm, null, $mode, null)) {
-			throw new WrongStateException('Mcrypt Module did not open.');
+	private function  __construct($algorithm, $vector) {
+		if( !in_array($algorithm, openssl_get_cipher_methods(true)) ) {
+			throw new UnsupportedMethodException('Algorithm is not supported');
 		}
+		$this->algorithm = $algorithm;
 
-		$this->iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($this->crResource), MCRYPT_DEV_URANDOM);
-
-		$this->keySize = mcrypt_enc_get_key_size($this->crResource);
+		$this->iv = $this->createIV($vector);
 	}
 
 	public function  __destruct() {
-		mcrypt_module_close($this->crResource);
+		$this->algorithm = null;
+		$this->iv = null;
 	}
 
 	public function encrypt($secret, $data) {
-		mcrypt_generic_init($this->crResource, $this->createKey($secret), $this->iv);
-
-		return mcrypt_generic($this->crResource, $data);
+		return openssl_encrypt($data, $this->algorithm, $secret, 0, $this->iv);
 	}
 
 	public function decrypt($secret, $encryptedData) {
-		mcrypt_generic_init($this->crResource, $this->createKey($secret), $this->iv);
-
-		// crop padding garbage
-		return rtrim(mdecrypt_generic($this->crResource, $encryptedData), "\0");
+		return openssl_decrypt($encryptedData, $this->algorithm, $secret, 0, $this->iv);
 	}
 
-	private function createKey($secret) {
-		return substr(md5($secret), 0, $this->keySize);
+	private function createIV($vector) {
+		return substr(openssl_digest($vector, 'whirlpool', true), 0, openssl_cipher_iv_length($this->algorithm));
 	}
 }
