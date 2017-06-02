@@ -7,6 +7,7 @@
  */
 namespace Hesper\Core\Base;
 
+use Hesper\Core\Exception\ClassNotFoundException;
 use Hesper\Core\Exception\WrongArgumentException;
 use Hesper\Core\Form\Primitive\PrimitiveUuid;
 use Hesper\Main\Util\ClassUtils;
@@ -191,7 +192,7 @@ final class Assert extends StaticFactory {
 
 	public static function classExists($className, $message = null) {
 		if (!class_exists($className, true)) {
-			throw new WrongArgumentException($message . ', class "' . $className . '" does not exists');
+			throw new ClassNotFoundException($message . ', class "' . $className . '" does not exists');
 		}
 	}
 
