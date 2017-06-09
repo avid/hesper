@@ -71,15 +71,12 @@ final class PostgresDialect extends Dialect {
 			return 'BYTEA';
 		}
 
-		if (defined('POSTGRES_IP4_ENABLED')) {
+		if ($type->getId() == DataType::IP) {
+			return 'inet';
+		}
 
-			if ($type->getId() == DataType::IP) {
-				return 'ip4';
-			}
-
-			if ($type->getId() == DataType::IP_RANGE) {
-				return 'ip4r';
-			}
+		if ($type->getId() == DataType::IP_RANGE) {
+			return 'cidr';
 		}
 
 		return parent::typeToString($type);
