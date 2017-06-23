@@ -128,7 +128,7 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 			throw new WrongStateException();
 
 		try {
-			$obj = $this->lookupQueue($consumerTag);
+			$obj = $this->lookupQueue(self::NIL);
 
 			$result = $obj->cancel($consumerTag);
 
@@ -173,9 +173,8 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 			 */
 			$obj->consume(
 				array($callback, 'handlePeclDelivery'),
-				$autoAck
-					? AMQP_AUTOACK
-					: self::AMQP_NONE
+				$autoAck ? AMQP_AUTOACK : self::AMQP_NONE,
+				$callback->getConsumerTag()
 			);
 		} catch (Exception $e) {
 			$this->clearConnection();

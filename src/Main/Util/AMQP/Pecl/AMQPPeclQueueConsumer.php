@@ -54,18 +54,20 @@ abstract class AMQPPeclQueueConsumer extends AMQPDefaultConsumer
 
 		if ($this->limit && $this->count > $this->limit) {
 			$this->setCancel(true);
+			$queue->cancel();
 		}
 
 		return $this->handleDelivery(
-			AMQPPeclIncomingMessageAdapter::convert($delivery)
+			AMQPPeclIncomingMessageAdapter::convert($delivery)->setCount($this->count)->setConsumerTag($this->consumerTag)
 		);
 	}
 
 	public function handleDelivery(AMQPIncomingMessage $delivery)
 	{
 		if ($this->cancel) {
-			$this->handleCancelOk('');
+			$this->handleCancelOk($delivery->getConsumerTag());
 			return false;
 		}
+		return true;
 	}
 }
