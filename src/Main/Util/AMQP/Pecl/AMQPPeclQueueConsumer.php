@@ -21,7 +21,7 @@ abstract class AMQPPeclQueueConsumer extends AMQPDefaultConsumer
 	protected $limit = 0;
 
 	/**
-	 * @param type $cancel
+	 * @param boolean $cancel
 	 * @return AMQPPeclQueueConsumer
 	 */
 	public function setCancel($cancel)
@@ -52,8 +52,9 @@ abstract class AMQPPeclQueueConsumer extends AMQPDefaultConsumer
 	{
 		$this->count++;
 
-		if ($this->limit && $this->count >= $this->limit)
+		if ($this->limit && $this->count > $this->limit) {
 			$this->setCancel(true);
+		}
 
 		return $this->handleDelivery(
 			AMQPPeclIncomingMessageAdapter::convert($delivery)
