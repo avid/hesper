@@ -423,14 +423,14 @@ final class Primitive extends StaticFactory {
 	}
 
 	/**
-	 * @return PrimitiveUuid
+	 * @return PrimitiveUuidIdentifier
 	 **/
 	public static function uuidIdentifier($name) {
 		return new PrimitiveUuidIdentifier($name);
 	}
 
 	/**
-	 * @return PrimitiveUuid
+	 * @return PrimitiveUuidIdentifierList
 	 **/
 	public static function uuidIdentifierList($name) {
 		return new PrimitiveUuidIdentifierList($name);
