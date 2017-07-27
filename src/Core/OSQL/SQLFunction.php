@@ -25,6 +25,7 @@ final class SQLFunction extends Castable implements MappableObject, Aliased {
 	private $name      = null;
 	private $alias     = null;
 	private $aggregate = null;
+	private $filter    = null;
 
 	private $args = [];
 
@@ -91,6 +92,14 @@ final class SQLFunction extends Castable implements MappableObject, Aliased {
 
 		return $this;
 	}
+	
+	/**
+         * @return SQLFunction
+     	 **/
+        public function setFilter(LogicalObject $logic){
+		$this->filter = $logic;
+		return $this;
+        }
 
 	/**
 	 * @return SQLFunction
@@ -150,6 +159,10 @@ final class SQLFunction extends Castable implements MappableObject, Aliased {
 
 		$out .= ($args == [] ? null : implode(', ', $args)) . ')';
 
+		if($this->filter instanceof LogicalObject ){
+			$out .= ' FILTER ( WHERE '.$this->filter->toDialectString($dialect).') ';
+		}
+		
 		$out = $this->cast ? $dialect->toCasted($out, $this->cast) : $out;
 
 		return $this->alias ? $out . ' AS ' . $dialect->quoteTable($this->alias) : $out;
