@@ -8,7 +8,7 @@ namespace Hesper\Meta\Pattern;
 
 use Hesper\Meta\Entity\MetaClass;
 
-final class SpookedRegistryPattern extends RegistryClassPattern
+class SpookedRegistryPattern extends RegistryClassPattern
 {
 	/**
 	 * @return SpookedRegistryPattern

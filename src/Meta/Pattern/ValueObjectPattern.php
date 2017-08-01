@@ -13,7 +13,7 @@ use Hesper\Meta\Entity\MetaClass;
  * Class ValueObjectPattern
  * @package Hesper\Meta\Pattern
  */
-final class ValueObjectPattern extends BasePattern {
+class ValueObjectPattern extends AbstractClassPattern {
 
 	public function tableExists() {
 		return false;

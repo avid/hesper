@@ -13,7 +13,7 @@ use Hesper\Meta\Entity\MetaClass;
  * Class SpookedEnumerationPattern
  * @package Hesper\Meta\Pattern
  */
-final class SpookedEnumerationPattern extends EnumerationClassPattern {
+class SpookedEnumerationPattern extends EnumerationClassPattern {
 
 	/**
 	 * @return SpookedEnumerationPattern

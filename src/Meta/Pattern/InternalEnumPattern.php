@@ -10,7 +10,7 @@ namespace Hesper\Meta\Pattern;
  * Class InternalEnumPattern
  * @package Hesper\Meta\Pattern
  */
-final class InternalEnumPattern extends InternalCommonPattern {
+class InternalEnumPattern extends InternalCommonPattern {
 
 	public function daoExists() {
 		return false;

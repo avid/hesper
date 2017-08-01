@@ -11,7 +11,7 @@ namespace Hesper\Meta\Pattern;
  * Class InternalClassPattern
  * @package Hesper\Meta\Pattern
  */
-final class InternalClassPattern extends InternalCommonPattern implements GenerationPattern {
+class InternalClassPattern extends InternalCommonPattern implements GenerationPattern {
 
 	public function daoExists() {
 		return true;

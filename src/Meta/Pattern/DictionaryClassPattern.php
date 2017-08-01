@@ -11,7 +11,7 @@ namespace Hesper\Meta\Pattern;
  * Class DictionaryClassPattern
  * @package Hesper\Meta\Pattern
  */
-final class DictionaryClassPattern extends BasePattern {
+class DictionaryClassPattern extends BasePattern {
 
 	public function daoExists() {
 		return true;

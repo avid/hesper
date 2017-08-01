@@ -14,7 +14,7 @@ use Hesper\Meta\Entity\MetaClass;
  * Class SpookedClassPattern
  * @package Hesper\Meta\Pattern
  */
-final class SpookedClassPattern extends Singleton implements GenerationPattern {
+class SpookedClassPattern extends Singleton implements GenerationPattern {
 
 	public function build(MetaClass $class) {
 		return $this;

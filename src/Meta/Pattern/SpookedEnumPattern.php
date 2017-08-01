@@ -13,7 +13,7 @@ use Hesper\Meta\Entity\MetaClass;
  * Class SpookedEnumPattern
  * @package Hesper\Meta\Pattern
  */
-final class SpookedEnumPattern extends EnumClassPattern {
+class SpookedEnumPattern extends EnumClassPattern {
 
 	/**
 	 * @return SpookedEnumPattern
