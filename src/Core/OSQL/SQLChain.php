@@ -23,8 +23,11 @@ abstract class SQLChain implements LogicalObject, MappableObject {
 	protected $logic = [];
 
 	/**
-	 * @return SQLChain
-	 **/
+	 * @param DialectString $exp
+	 * @param               $logic
+	 *
+	 * @return $this
+	 */
 	protected function exp(DialectString $exp, $logic) {
 		$this->chain[] = $exp;
 		$this->logic[] = $logic;
@@ -45,14 +48,17 @@ abstract class SQLChain implements LogicalObject, MappableObject {
 	}
 
 	/**
-	 * @return SQLChain
-	 **/
+	 * @param ProtoDAO         $dao
+	 * @param JoinCapableQuery $query
+	 *
+	 * @return static
+	 */
 	public function toMapped(ProtoDAO $dao, JoinCapableQuery $query) {
 		$size = count($this->chain);
 
 		Assert::isTrue($size > 0, 'empty chain');
 
-		$chain = new $this;
+		$chain = new static();
 
 		for ($i = 0; $i < $size; ++$i) {
 			$chain->exp($dao->guessAtom($this->chain[$i], $query), $this->logic[$i]);

@@ -22,9 +22,13 @@ final class QueryChain extends SQLChain {
 	}
 
 	/**
+	 * @param $args
+	 * @param $logic
+	 *
 	 * @return QueryChain
-	 **/
-	public static function block($args, $logic) {
+	 * @throws WrongArgumentException
+	 */
+	public static function block(array $args, $logic) {
 		$queryChain = new self;
 
 		foreach ($args as $arg) {

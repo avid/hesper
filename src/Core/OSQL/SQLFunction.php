@@ -10,6 +10,7 @@ namespace Hesper\Core\OSQL;
 use Hesper\Core\Base\Aliased;
 use Hesper\Core\Base\Assert;
 use Hesper\Core\DB\Dialect;
+use Hesper\Core\Logic\LogicalObject;
 use Hesper\Core\Logic\MappableObject;
 use Hesper\Main\DAO\ProtoDAO;
 
