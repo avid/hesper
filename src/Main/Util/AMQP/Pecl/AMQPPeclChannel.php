@@ -177,9 +177,8 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 				$callback->getConsumerTag()
 			);
 		} catch (Exception $e) {
-			$this->clearConnection();
-
 			if ($e->getCode()) {
+			    $this->clearConnection();
                 throw new AMQPServerException(
                     $e->getMessage(),
                     $e->getCode(),
