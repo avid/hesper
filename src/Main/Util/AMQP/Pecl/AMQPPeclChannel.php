@@ -179,11 +179,13 @@ final class AMQPPeclChannel extends AMQPBaseChannel
 		} catch (Exception $e) {
 			$this->clearConnection();
 
-			throw new AMQPServerException(
-				$e->getMessage(),
-				$e->getCode(),
-				$e
-			);
+			if ($e->getCode()) {
+                throw new AMQPServerException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e
+                );
+            }
 		}
 
 		return $this;
