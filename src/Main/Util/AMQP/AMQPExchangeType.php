@@ -17,14 +17,16 @@ final class AMQPExchangeType extends Enum
 {
 	const DIRECT = 1;
 	const FANOUT = 2;
-	const TOPIC = 3;
+	const TOPIC  = 3;
 	const HEADER = 4;
+	const DELAY  = 5;
 
 	protected static $names = array(
 		self::DIRECT => "direct",
 		self::FANOUT => "fanout",
-		self::TOPIC => "topic",
-		self::HEADER => "header"
+		self::TOPIC  => "topic",
+		self::HEADER => "header",
+		self::DELAY  => "x-delayed-message",
 	);
 
 	public function getDefault()
