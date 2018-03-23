@@ -29,6 +29,7 @@ abstract class AMQPBaseMessage
 	const EXPIRATION = 'expiration';
 	const TYPE = 'type';
 	const REPLY_TO = 'reply_to';
+	const HEADERS = 'headers';
 
 	const DELIVERY_MODE_NONPERISISTENT = 1;
 	const DELIVERY_MODE_PERISISTENT = 2;
@@ -286,4 +287,29 @@ abstract class AMQPBaseMessage
 	{
 		return $this->getProperty(self::REPLY_TO);
 	}
+
+    /**
+     * @param array $headers
+     */
+	public function setHeaders($headers)
+    {
+        $this->properties[self::HEADERS] = $headers;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getHeaders()
+    {
+        return $this->getProperty(self::HEADERS);
+    }
+
+    /**
+     * @param $name
+     * @param $val
+     */
+    public function addHeader($name, $val)
+    {
+        $this->properties[self::HEADERS][$name] = $val;
+    }
 }
