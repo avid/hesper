@@ -13,6 +13,7 @@ use Hesper\Core\Exception\MissingElementException;
 use Hesper\Core\Exception\UnsupportedMethodException;
 use Hesper\Main\Flow\HttpRequest;
 use Hesper\Main\Net\Http\CurlHttpClient;
+use Hesper\Main\Net\Http\CurlHttpResponse;
 use Hesper\Main\Net\Http\HttpMethod;
 use Hesper\Main\Net\HttpUrl;
 
@@ -26,7 +27,7 @@ class StorageEngineWebDAV extends StorageEngineHTTP {
 
 	public function store ($file, $desiredName) {
 		$sendRequest = HttpRequest::create()
-			->setMethod(HttpMethod::put())
+			->setMethod(HttpMethod::create(HttpMethod::PUT))
 			->setUrl( HttpUrl::create()->parse($this->getUploadLink($desiredName)) );
 
 		/** @var CurlHttpResponse $resp */
@@ -66,7 +67,7 @@ class StorageEngineWebDAV extends StorageEngineHTTP {
 
     protected function unlink($file) {
 		$sendRequest = HttpRequest::create()
-            ->setMethod(HttpMethod::delete())
+            ->setMethod(HttpMethod::create(HttpMethod::DELETE))
             ->setUrl( HttpUrl::create()->parse($this->getUploadLink($file)) );
 
         /** @var CurlHttpResponse $resp */
